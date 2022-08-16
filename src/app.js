@@ -7,7 +7,7 @@ const mongoose = require('mongoose');
 
 const productRoutes = require('./api/routes/products');
 const orderRoutes = require('./api/routes/orders');
-
+const userRoutes = require('./api/routes/users');
 dotenv.config();
 
 const port = process.env.PORT;
@@ -41,6 +41,7 @@ app.get('/', (req, res, next) => {
     message: 'Welcome User',
   });
 });
+app.use('/user', userRoutes);
 app.use('/products', productRoutes);
 app.use('/orders', orderRoutes);
 
