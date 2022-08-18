@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
-const ProductsController = require('../controllers/product');
+const ProductsController = require('../controllers/product.controller');
 const checkAuth = require('../middleware/check-auth');
 
 //Get all Products

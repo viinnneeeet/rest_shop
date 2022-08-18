@@ -1,5 +1,5 @@
 const mongoose = require('mongoose');
-const Product = require('../models/product');
+const Product = require('../models/product.model');
 
 exports.get_products = async (req, res, next) => {
   const { page, limit } = req.query;
@@ -49,6 +49,7 @@ exports.add_product = async (req, res, next) => {
     _id: mongoose.Types.ObjectId(),
     name: req.body.name,
     price: req.body.price,
+    isActive: true,
   });
   await product
     .save()
@@ -68,8 +69,8 @@ exports.add_product = async (req, res, next) => {
 };
 
 exports.update_product = async (req, res, next) => {
-  const { name, price } = req.body;
-  await Product.updateOne({ _id: req.body.id }, { $set: { name, price } })
+  const { name, price, _id } = req.body;
+  await Product.updateOne({ _id }, { $set: { name, price } })
     .exec()
     .then(() => {
       res.status(200).json({
