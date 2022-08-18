@@ -1,7 +1,6 @@
 const mongoose = require('mongoose');
 // const Order = require('../models/order');
-const Product = require('../models/product');
-const Order = require('../models/order');
+const Order = require('../models/order.model');
 
 exports.orders_get_all = async (req, res, next) => {
   const { page, limit } = req.query;
@@ -73,6 +72,21 @@ exports.add_order = async (req, res, next) => {
   }
 };
 
-exports.update_order = async (req, res, next) => {};
+exports.update_order = async (req, res, next) => {
+  const { _id, quantity, productId } = req.body;
+  Order.updateOne({ _id }, { $set: { quantity, productId } })
+    .exec()
+    .then((result) => {
+      res.status(200).json({
+        message: 'Updated Successfully',
+        success: true,
+      });
+    })
+    .catch((err) => {
+      return res.status(500).json({
+        message: err,
+      });
+    });
+};
 
 exports.delete_order = async (req, res, next) => {};

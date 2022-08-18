@@ -41,9 +41,9 @@ app.get('/', (req, res, next) => {
     message: 'Welcome User',
   });
 });
-app.use('/user', userRoutes);
-app.use('/products', productRoutes);
-app.use('/orders', orderRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/products', productRoutes);
+app.use('/api/orders', orderRoutes);
 
 app.use((req, res, next) => {
   const error = new Error('Not Found');
