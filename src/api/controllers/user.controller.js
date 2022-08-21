@@ -6,7 +6,7 @@ const User = require('../models/user.model');
 
 exports.user_sign_in = async (req, res, next) => {
   const { email, password } = req.body;
-  await User.find({ email })
+  const user = await User.find({ email })
     .exec()
     .then((user) => {
       if (user.length < 1) {
@@ -29,11 +29,16 @@ exports.user_sign_in = async (req, res, next) => {
             { email: user[0].email, _id: user[0]._id },
             process.env.JWT_KEY,
             {
-              expiresIn: '1h',
+              expiresIn: '2m',
             }
           );
-          return res.status(200).json({
+          const data = {
             role: 'admin',
+            _id: user[0]._id,
+            email: user[0].email,
+          };
+          return res.status(200).json({
+            data,
             accessToken,
             success: true,
             message: 'Auth SuccessFul',
@@ -118,6 +123,32 @@ exports.user_delete = async (req, res, next) => {
     return res.status(404).json({
       message: 'Method Not Allowed Forbidden Access',
       failed: true,
+    });
+  }
+};
+
+exports.user_refresh_token = async (req, res, next) => {
+  try {
+    const { _id, email, accessToken } = req.body;
+
+    if ((_id, email, accessToken)) {
+      const refreshToken = jwt.sign({ _id, email }, process.env.JWT_KEY, {
+        expiresIn: '2m',
+      });
+      return res.status(200).json({
+        accessToken: refreshToken,
+        success: true,
+        message: 'Refresh Token ',
+      });
+    } else {
+      return res.status(400).json({
+        failed: true,
+        message: 'Please Login',
+      });
+    }
+  } catch (err) {
+    return res.status(500).json({
+      message: err.message,
     });
   }
 };
