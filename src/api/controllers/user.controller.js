@@ -29,7 +29,7 @@ exports.user_sign_in = async (req, res, next) => {
             { email: user[0].email, _id: user[0]._id },
             process.env.JWT_KEY,
             {
-              expiresIn: '2m',
+              expiresIn: '5m',
             }
           );
           const data = {
@@ -131,9 +131,9 @@ exports.user_refresh_token = async (req, res, next) => {
   try {
     const { _id, email, accessToken } = req.body;
 
-    if ((_id, email, accessToken)) {
+    if ((_id, email)) {
       const refreshToken = jwt.sign({ _id, email }, process.env.JWT_KEY, {
-        expiresIn: '2m',
+        expiresIn: '5m',
       });
       return res.status(200).json({
         accessToken: refreshToken,

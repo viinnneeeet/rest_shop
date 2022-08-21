@@ -8,7 +8,7 @@ module.exports = (req, res, next) => {
     next();
   } catch (err) {
     return res.status(401).json({
-      message: 'Auth failed',
+      message: err.message,
       failed: true,
     });
   }
