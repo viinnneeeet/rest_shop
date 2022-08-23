@@ -9,6 +9,6 @@ router.post('/login', UserController.user_sign_in);
 //Delete User
 router.post('/deleteUser', checkAuth, UserController.user_delete);
 //Refresh Token
-router.post('/refreshToken', checkAuth, UserController.user_refresh_token);
+router.post('/refreshToken', UserController.user_refresh_token);
 
 module.exports = router;

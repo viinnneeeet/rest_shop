@@ -6,56 +6,98 @@ const User = require('../models/user.model');
 
 exports.user_sign_in = async (req, res, next) => {
   const { email, password } = req.body;
-  const user = await User.find({ email })
-    .exec()
-    .then((user) => {
-      if (user.length < 1) {
-        return res.status(200).json({
-          // message: 'Auth Failed',
-          message: 'Email Does not exist',
-          failed: true,
-        });
-      }
-      bcrypt.compare(password, user[0].password, (err, result) => {
-        if (err) {
-          return res.status(200).json({
-            // message: 'Auth Failed',
-            message: 'Incorrect Password',
-            failed: true,
-          });
-        }
+  try {
+    const data = await User.findOne({ email });
+
+    if (!data) {
+      res.status(400).json({
+        message: 'Email does not exist',
+        failed: true,
+      });
+    }
+
+    if (data) {
+      try {
+        const result = await bcrypt.compare(password, data.password);
+
         if (result) {
           const accessToken = jwt.sign(
-            { email: user[0].email, _id: user[0]._id },
+            { email: data.email, _id: data._id },
             process.env.JWT_KEY,
             {
-              expiresIn: '5m',
+              expiresIn: '1h',
             }
           );
-          const data = {
-            role: 'admin',
-            _id: user[0]._id,
-            email: user[0].email,
+          const user = {
+            role: data.role,
+            _id: data._id,
+            email: data.email,
           };
           return res.status(200).json({
-            data,
+            user,
             accessToken,
             success: true,
             message: 'Auth SuccessFul',
           });
         }
-      });
-    })
-    .catch((err) => {
-      res.status(500).json({
-        message: err,
-        failed: true,
-      });
+      } catch (err) {
+        return res.status(400).json({
+          // message: 'Auth Failed',
+          message: 'Incorrect Password',
+          failed: true,
+        });
+      }
+    }
+  } catch (err) {
+    res.status(500).json({
+      message: err.message,
+      failed: true,
     });
+  }
+  // const user = await User.find({ email })
+  //   .exec()
+  //   .then((user) => {
+  //     if (user.length < 1) {
+  //       return res.status(400).json({
+  //         // message: 'Auth Failed',
+  //         message: 'Email Does not exist',
+  //         failed: true,
+  //       });
+  //     }
+  //     bcrypt.compare(password, user[0].password, (err, result) => {
+  //       if (err) {
+  //         return res.status(400).json({
+  //           // message: 'Auth Failed',
+  //           message: 'Incorrect Password',
+  //           failed: true,
+  //         });
+  //       }
+  //       if (result) {
+  //         const accessToken = jwt.sign(
+  //           { email: user[0].email, _id: user[0]._id },
+  //           process.env.JWT_KEY,
+  //           {
+  //             expiresIn: '1h',
+  //           }
+  //         );
+  //         const user = {
+  //           role: 'user',
+  //           _id: user[0]._id,
+  //           email: user[0].email,
+  //         };
+  //         return res.status(200).json({
+  //           user,
+  //           accessToken,
+  //           success: true,
+  //           message: 'Auth SuccessFul',
+  //         });
+  //       }
+  //     });
+  //   });
 };
 
 exports.user_sign_up = async (req, res, next) => {
-  const { email, password } = req.body;
+  const { role, email, password } = req.body;
   User.find({ email })
     .exec()
     .then((user) => {
@@ -75,6 +117,7 @@ exports.user_sign_up = async (req, res, next) => {
               _id: new mongoose.Types.ObjectId(),
               email,
               password: hash,
+              role,
             });
             user
               .save()
@@ -133,7 +176,7 @@ exports.user_refresh_token = async (req, res, next) => {
 
     if ((_id, email)) {
       const refreshToken = jwt.sign({ _id, email }, process.env.JWT_KEY, {
-        expiresIn: '5m',
+        expiresIn: '1h',
       });
       return res.status(200).json({
         accessToken: refreshToken,
