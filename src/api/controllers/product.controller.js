@@ -45,7 +45,8 @@ exports.get_products = async (req, res, next) => {
 };
 
 exports.add_product = async (req, res, next) => {
-  const { name, price, image, isActive } = req.body;
+  const { name, price, image } = req.body;
+  const isActive = true;
   const product = new Product({
     _id: mongoose.Types.ObjectId(),
     name,
@@ -54,10 +55,11 @@ exports.add_product = async (req, res, next) => {
     isActive,
   });
   try {
-    const productData = await Product.find({ name });
+    const productData = await Product.findOne({ name });
+
     if (productData.name === name) {
       return res.status(400).json({
-        message: 'Product name already exists',
+        message: 'Product already exists',
         failed: true,
       });
     }
@@ -77,15 +79,25 @@ exports.add_product = async (req, res, next) => {
 };
 
 exports.update_product = async (req, res, next) => {
+  let { name, price, _id, isActive, image } = req.body;
   try {
-    let { name, price, _id } = req.body;
     const product = await Product.findById({ _id });
     if (!name) {
       name = product.name;
     } else if (!price) {
       price = product.price;
+    } else if (!isActive) {
+      isActive = product.isActive;
+    } else if (!image) {
+      image = product.image;
     }
-    if (product.name === name && product.price === price) {
+
+    if (
+      product.name === name &&
+      product.price === price &&
+      product.isActive === isActive &&
+      product.image === image
+    ) {
       return res.status(400).json({
         message: 'No Changes Found',
         failed: true,
@@ -94,9 +106,8 @@ exports.update_product = async (req, res, next) => {
 
     const result = await Product.findByIdAndUpdate(
       { _id },
-      { $set: { name, price } }
+      { $set: { name, price, isActive, image } }
     );
-
     if (result) {
       return res.status(200).json({
         message: 'Updated Successfully',

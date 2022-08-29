@@ -10,9 +10,6 @@ const orderRoutes = require('./api/routes/orders');
 const userRoutes = require('./api/routes/users');
 dotenv.config();
 
-const port = process.env.PORT;
-// console.log(`Your port is ${port}`);
-
 mongoose.connect(process.env.MONGODB, {
   useNewUrlParser: true,
 });
