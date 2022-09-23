@@ -17,32 +17,29 @@ exports.user_sign_in = async (req, res, next) => {
     }
 
     if (data) {
-      try {
-        const result = await bcrypt.compare(password, data.password);
-
-        if (result) {
-          const accessToken = jwt.sign(
-            { email: data.email, _id: data._id },
-            process.env.JWT_KEY,
-            {
-              expiresIn: '1h',
-            }
-          );
-          const user = {
-            role: data.role,
-            _id: data._id,
-            email: data.email,
-          };
-          return res.status(200).json({
-            user,
-            accessToken,
-            success: true,
-            message: 'Auth SuccessFul',
-          });
-        }
-      } catch (err) {
+      const result = await bcrypt.compare(password, data.password);
+      if (result) {
+        const accessToken = jwt.sign(
+          { email: data.email, _id: data._id },
+          process.env.JWT_KEY,
+          {
+            expiresIn: '1m',
+          }
+        );
+        const user = {
+          role: data.role,
+          _id: data._id,
+          email: data.email,
+        };
+        return res.status(200).json({
+          user,
+          accessToken,
+          success: true,
+          message: 'Auth SuccessFul',
+        });
+      } else {
         return res.status(400).json({
-          // message: 'Auth Failed',
+          //           // message: 'Auth Failed',
           message: 'Incorrect Password',
           failed: true,
         });
@@ -193,5 +190,139 @@ exports.user_refresh_token = async (req, res, next) => {
     return res.status(500).json({
       message: err.message,
     });
+  }
+};
+
+//Dev to
+
+//get users
+exports.user_get_users = async (req, res) => {
+  const users = await User.find({})
+    .populate({
+      path: 'posts',
+      populate: ['author', 'tags'],
+    })
+    .sort({ followers: -1 })
+    .exec();
+  if (!users) {
+    return res.status(404).json({ message: 'No Users Found' });
+  }
+  res.status(200).json({
+    users: users.map((user) => user.toObject({ getters: true })),
+    message: 'Users Lists',
+    success: true,
+  });
+};
+
+//get user
+exports.user_get_user = async (req, res) => {
+  const userName = req.params.userName;
+  if (!userName) {
+    return res
+      .status(400)
+      .json({ message: 'User Name is required', failed: true });
+  }
+  const user = await User.findOne({ userName })
+    .populate({
+      path: 'posts',
+      populate: ['author', 'tags'],
+    })
+    .exec();
+
+  if (!user) {
+    return res
+      .status(204)
+      .json({ message: `User ${userName} not found`, failed: true });
+  }
+  res.status(200).json({
+    user: user.toObject({ getters: true }),
+    message: 'User data',
+    success: true,
+  });
+};
+
+//get user dashboard
+exports.user_get_user_dashboard = async (req, res) => {
+  const userName = req.params.userName;
+
+  if (!userName) {
+    return res.status(400).json({ message: 'User Name is required' });
+  }
+  const user = await User.findOne({ userName })
+    .populate({
+      path: 'posts',
+      options: { sort: { created: -1 } },
+    })
+    .populate('following')
+    .populate('followers')
+    .populate({ path: 'followedTags', options: { sort: { posts: -1 } } });
+
+  if (!user) {
+    return res.status(204).json({
+      message: `User ${userName} not found`,
+      failed: true,
+    });
+  }
+
+  res.status(200).json({
+    user: user.toObject({ getters: true }),
+    message: 'User details',
+    success: true,
+  });
+};
+
+//delete user
+exports.user.delete_user = async (req, res) => {
+  const _id = req.params.id;
+
+  if (!_id) {
+    return res.status(400).json({ message: 'User Id required', failed: true });
+  }
+
+  const user = await User.findOne({ _id }).exec();
+
+  if (!user) {
+    return res
+      .status(204)
+      .json({ message: 'User Id is in valid', failed: true });
+  }
+
+  const deleteUser = await User.deleteOne({ _id });
+
+  if (deleteUser) {
+    return res
+      .status(200)
+      .json({ message: 'User deleted successfully', success: true });
+  }
+
+  //Cloudinary
+
+  // followers and following
+
+  // delete Post
+};
+
+//update user
+exports.user.update_user = async (req, res) => {
+  const _id = req.params.id;
+
+  const user = await User.findOne({ _id }).exec();
+
+  if (!user) {
+    return res.status(400).json({
+      message: 'User id is invalid',
+      failed: true,
+    });
+  }
+
+  const updatedUser = await User.findOneAndUpdate(
+    { _id },
+    { ...req.body },
+    { new: true }
+  );
+  if (updatedUser) {
+    return res
+      .status(200)
+      .json({ message: 'User updated successfully', success: true });
   }
 };
