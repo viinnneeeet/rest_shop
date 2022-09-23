@@ -1,6 +1,7 @@
 # dependencies
 node_modules
 logs
+.env
 
 # testing
 coverage

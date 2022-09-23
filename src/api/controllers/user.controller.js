@@ -272,7 +272,7 @@ exports.user_get_user_dashboard = async (req, res) => {
 };
 
 //delete user
-exports.user.delete_user = async (req, res) => {
+exports.user_delete_user = async (req, res) => {
   const _id = req.params.id;
 
   if (!_id) {
@@ -303,7 +303,7 @@ exports.user.delete_user = async (req, res) => {
 };
 
 //update user
-exports.user.update_user = async (req, res) => {
+exports.user_update_user = async (req, res) => {
   const _id = req.params.id;
 
   const user = await User.findOne({ _id }).exec();
