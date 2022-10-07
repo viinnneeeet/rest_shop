@@ -3,6 +3,7 @@ const mongoose = require('mongoose');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
 //Dev to model
 // const UserSchema = new Schema(
 //   {
@@ -78,6 +79,9 @@ const UserSchema = new mongoose.Schema(
 
 //Hash Password
 UserSchema.pre('save', async function (next) {
+  if (!this.isModified('password')) {
+    next();
+  }
   this.password = await bcrypt.hash(this.password, 10);
 });
 
@@ -86,7 +90,23 @@ UserSchema.methods.comparePassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
+//Forget Password
+UserSchema.methods.getResetToken = function () {
+  const resetToken = crypto.randomBytes(20).toString('hex');
+
+  //hashing and adding reset Password to user schema
+  this.resetPasswordToken = crypto
+    .createHash('sha256')
+    .update(resetToken)
+    .digest('hex');
+
+  this.resetPasswordTime = Date.now() + 15 * 60 * 1000;
+
+  return resetToken;
+};
+
 //Jwt Token
+// process.env.JWT_KEY
 UserSchema.methods.getJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_KEY, {
     expiresIn: '5m',

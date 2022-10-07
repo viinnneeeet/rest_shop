@@ -22,11 +22,14 @@ app.use(cors(corsOptions));
 
 //built-in middleware to handle urlencoded form data
 //built-in middleware for json
-app.use(express.urlencoded({ limit: '50mb', extended: true }));
 
 app.use(cookieParser());
 
-app.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+// parse application/x-www-form-urlencoded
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
+// parse application/json
+app.use(express.json());
 
 app.use(fileUpload({ useTempFiles: true }));
 

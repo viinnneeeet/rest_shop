@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const { createServer, Server } = require('http');
 const connectDatabase = require('./src/config/db');
 const cloudinary = require('cloudinary');
-
+require('dotenv').config();
 const httpServer = createServer(app);
 
 // Handling uncaught Exception
@@ -31,13 +31,12 @@ cloudinary.config({
 });
 
 // create server
-
+// console.log(process.env.port, 'port');
 const server = mongoose.connection.once('open', () => {
   const io = new Server(httpServer);
-  httpServer.listen(process.env.PORT || 8626, () => {
-    console.log(
-      `Server is working on http://localhost:${process.env.PORT || 8626}`
-    );
+  const port = process.env.PORT || 4000;
+  httpServer.listen(port, () => {
+    console.log(`Server is working on http://localhost:${port}`);
   });
 });
 
