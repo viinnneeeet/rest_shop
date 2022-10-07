@@ -50,9 +50,9 @@ const order = require('./routes/orders');
 
 app.use('/api/v2/product', product);
 
-app.use('/api/v2', user);
+app.use('/api/v2/user', user);
 
-app.use('/api/v2', order);
+// app.use('/api/v2', order);
 
 // app.use('/api/v2', payment);
 

@@ -15,6 +15,7 @@ exports.create_product_store = catchAsyncErrors(async (req, res) => {
   });
 });
 
+//get all Products
 exports.get_all_products_store = catchAsyncErrors(async (req, res) => {
   const resultPerPage = 10;
 
@@ -26,7 +27,7 @@ exports.get_all_products_store = catchAsyncErrors(async (req, res) => {
     .pagination(resultPerPage);
   const products = await feature.query;
 
-  res.status(200).json({
+  return res.status(200).json({
     success: true,
     products,
     message: 'Product lists',
@@ -39,10 +40,7 @@ exports.get_single_product_store = catchAsyncErrors(async (req, res, next) => {
   const product = await Product.findById(req.params._id);
 
   if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: 'Product not found',
-    });
+    next(new ErrorHandler('Product not found', 404));
   } else {
     return res.status(200).json({
       success: true,
