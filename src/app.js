@@ -7,11 +7,11 @@ const bodyParser = require('body-parser');
 const path = require('path');
 const morgan = require('morgan');
 
-const { logger } = require('../src/middleware/logEvents');
-const credentials = require('../src/middleware/credentials');
+const { logger } = require('./middlewares/logEvents');
+const credentials = require('./middlewares/credentials');
 
 const corsOptions = require('../src/config/corsOptions');
-const ErrorHandler = require('./middleware/error');
+const ErrorHandler = require('./middlewares/error');
 
 // Handle options credentials check - before CORS !
 // and fetch cookies credentials requirements
@@ -47,6 +47,7 @@ if (process.env.NODE_ENV !== 'PRODUCTION') {
 // Route imports
 const product = require('./routes/products');
 const user = require('./routes/users');
+const admin = require('./routes/admin');
 const order = require('./routes/orders');
 // const payment = require('./routes/PaymentRoute');
 // const cart = require('./routes/WishListRoute');
@@ -55,7 +56,9 @@ app.use('/api/v2/product', product);
 
 app.use('/api/v2/user', user);
 
-// app.use('/api/v2', order);
+app.use('/api/v2/admin', admin);
+
+app.use('/api/v2/order', order);
 
 // app.use('/api/v2', payment);
 

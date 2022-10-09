@@ -4,14 +4,15 @@ const jwt = require('jsonwebtoken');
 const User = require('../models/user.model');
 
 exports.isAuthenticatedUser = catchAsyncErrors(async (req, res, next) => {
-  // const { token } = req.cookies;
-  const token = req.headers.accesstoken;
+  const { token } = req.cookies;
+
+  // const token = req.headers.accesstoken;
 
   if (!token) {
     return next(new ErrorHandler('Please Login for access this resource', 401));
   }
   // console.log(process.env.JWT_SECRET_KEY, 'secret');
-  const decodedData = jwt.verify(token, process.env.JWT_SECRET_KEY);
+  const decodedData = jwt.verify(token, process.env.JWT_KEY);
 
   req.user = await User.findById(decodedData.id);
 
