@@ -17,6 +17,16 @@ router
     isAuthenticatedUser,
     authorizeRoles('admin'),
     UserController.getSingleUser
+  )
+  .put(
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    UserController.updateUserRole
+  )
+  .delete(
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    UserController.deleteUser
   );
 
 module.exports = router;

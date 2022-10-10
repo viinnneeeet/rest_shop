@@ -168,7 +168,7 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
   const newUserData = {
     name,
     email,
-    role,
+    // role,
   };
 
   const user = await User.findByIdAndUpdate(_id, newUserData, {
@@ -197,7 +197,7 @@ exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
 // Get single users
 exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
   const { _id } = req.params;
-  console.log(_id);
+  // console.log(_id);
   const user = await User.findById({ _id });
 
   if (!user) {
@@ -208,5 +208,43 @@ exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
     user,
     success: true,
     message: 'User Details',
+  });
+});
+
+//Update User Role
+exports.updateUserRole = catchAsyncErrors(async (req, res, next) => {
+  const { name, email, role } = req.body;
+  const _id = req.user;
+  const newUserData = {
+    role,
+  };
+
+  const user = await User.findByIdAndUpdate(_id, newUserData, {
+    new: true,
+    runValidators: true,
+    useFindAndModify: false,
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: 'User profile role',
+  });
+});
+
+// Delete User
+exports.deleteUser = catchAsyncErrors(async (req, res, next) => {
+  const { _id } = req.params;
+
+  const user = await User.findById(_id);
+
+  await user.remove();
+
+  if (!user) {
+    return next(new ErrorHandler('User not found', 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    message: 'User deleted',
   });
 });

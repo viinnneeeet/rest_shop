@@ -1,7 +1,7 @@
 const ErrorHandler = require('../utils/ErrorHandler');
 
 module.exports = (err, req, res, next) => {
-  console.log(err.code, 'error code');
+  // console.log(err.code, 'error code');
   // console.log(err.keyValue, 'error keyvalue');
   // console.log(err.name, 'error name');
 

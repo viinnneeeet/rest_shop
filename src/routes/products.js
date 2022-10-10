@@ -29,4 +29,20 @@ router
     ProductsController.delete_product_store
   );
 
+//Create Review
+router
+  .route('/review')
+  .post(isAuthenticatedUser, ProductsController.createProductReview);
+
+//single reviews
+router.route('/reviews/:id').get(ProductsController.getSingleProductReviews);
+
+//Delete reviews
+router
+  .route('/review/delete')
+  .post(
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    ProductsController.deleteReview
+  );
 module.exports = router;
