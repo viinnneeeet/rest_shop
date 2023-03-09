@@ -1,9 +1,7 @@
 const User = require('../models/user.model');
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const { OAuth2Client } = require('google-auth-library');
-const client = new OAuth2Client();
-const axios = require('axios');
+
 const { json } = require('body-parser');
 
 const handleLogin = async (req, res) => {
@@ -55,37 +53,6 @@ const handleLogin = async (req, res) => {
     }
   } catch (err) {
     return res.status(500).json({ message: err.message, failed: true });
-  }
-};
-
-const handleGoogleLogin = async (req, res) => {
-  const { tokenId } = req.body;
-
-  const response = await client.verifyIdToken({
-    idToken: tokenId,
-    audience: process.env.GOOGLE_CLIENT_ID,
-  });
-  const { name, email, picture } = response.getPayload();
-  let existingUser;
-
-  existingUser = await User.findOne({ email }, '-password').exec();
-
-  if (!existingUser) {
-    const userName = email.slice(0, email.indexOf('@'));
-    try {
-      const hashedPwd = await bcrypt.hash(email + userName + email, 10);
-
-      existingUser = await User.create({
-        userName,
-        email,
-        password: hashedPwd,
-        picture: {
-          url: picture,
-        },
-      });
-    } catch (err) {
-      return res.status(500).json({ message: err.message, failed: true });
-    }
   }
 };
 

@@ -17,7 +17,7 @@ exports.create_product_store = catchAsyncErrors(async (req, res) => {
 
 //get all Products
 exports.get_all_products_store = catchAsyncErrors(async (req, res) => {
-  const resultPerPage = 10;
+  const resultPerPage = 5;
 
   const totalCount = await Product.countDocuments();
 
@@ -54,7 +54,7 @@ exports.get_single_product_store = catchAsyncErrors(async (req, res, next) => {
 // update product -- admin
 exports.update_product_store = catchAsyncErrors(async (req, res, next) => {
   const { _id } = req.params;
-
+  const {} = req.body;
   let product = await Product.findById(_id);
   product = await Product.findByIdAndUpdate(_id, req.body, {
     new: true,

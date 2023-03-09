@@ -1,6 +1,5 @@
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
 const ProductsController = require('../controllers/product.controller');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 //Store

@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 //Store Model
-const productSchema = new mongoose.Schema(
+const ProductSchema = new mongoose.Schema(
   {
     name: {
       type: String,
@@ -81,12 +81,12 @@ const productSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
+      required: true,
     },
-    // isActive: { type: Boolean },
   },
   {
     timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
   }
 );
 
-module.exports = mongoose.model('Product', productSchema);
+module.exports = mongoose.model('Product', ProductSchema);

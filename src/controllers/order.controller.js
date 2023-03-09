@@ -1,169 +1,207 @@
-const mongoose = require('mongoose');
-// const Order = require('../models/order');
 const Order = require('../models/order.model');
+const Product = require('../models/Product.model');
+const ErrorHandler = require('../utils/ErrorHandler');
+const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 
-exports.orders_get_all = async (req, res, next) => {
-  const { page, limit } = req.query;
-  const { initiatedBy } = req.body;
-  try {
-    const orders = await Order.find()
-      .select('productId quantity _id')
-      .populate('productId', 'name price')
-      .skip(page * limit)
-      .limit(limit);
-    const response = {
-      orders: orders.map((doc) => {
-        return {
-          _id: doc._id,
-          productId: doc.productId._id,
-          productName: doc.productId.name,
-          quantity: doc.quantity,
-          price: doc.productId.price,
-          totalPrice: doc.productId.price * doc.quantity,
-        };
-      }),
-      message: 'Order details',
-      success: true,
-      count: orders.length,
-    };
-    if (initiatedBy === 'admin') {
-      if (orders.length > 0) {
-        res.status(200).json(response);
-      } else {
-        res.status(404).json({
-          message: 'No Data Found',
-          failed: true,
-        });
-      }
-    } else if (initiatedBy === 'user') {
-      res.status(200).json(response);
-    } else {
-      res.status(403).json({
-        message: 'Forbidden Access',
-        failed: true,
-      });
-    }
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
-      network: true,
-    });
-  }
+exports.createOrder = catchAsyncErrors(async (req, res, next) => {
+  const {
+    shippingInfo,
+    orderItems,
+    product,
+    paymentInfo,
+    itemsPrice,
+    shippingPrice,
+    taxPrice,
+    totalPrice,
+  } = req.body;
 
-  // if (initiatedBy === 'admin') {
-  //   const result = await Order.find()
-  //     .select('productId quantity _id')
-  //     .populate('productId', 'name price')
-  //     .skip(page * limit)
-  //     .limit(limit)
-  //     .exec()
-  //     .then((data) => {
-  //       const response = {
-  //         order: data.map((doc) => {
-  //           return {
-  //             _id: doc._id,
-  //             productId: doc.productId._id,
-  //             productName: doc.productId.name,
-  //             quantity: doc.quantity,
-  //             price: doc.productId.price,
-  //             totalPrice: doc.productId.price * doc.quantity,
-  //           };
-  //         }),
-  //         message: 'Order details',
-  //         success: true,
-  //         count: data.length,
-  //       };
-  //       if (data.length > 0) {
-  //         res.status(200).json(response);
-  //       } else {
-  //         res.status(404).json({
-  //           message: 'No Data Found',
-  //           failed: true,
-  //         });
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       res.status(500).json({
-  //         message: err.message,
-  //         network: true,
-  //       });
-  //     });
-  // } else {
-  //   res.status(403).json({
-  //     message: 'Forbidden Access',
-  //     failed: true,
-  //   });
-  // }
-};
-
-exports.add_order = async (req, res, next) => {
-  const { quantity, productId, initiatedBy } = req.body;
-  const order = new Order({
-    _id: mongoose.Types.ObjectId(),
-    quantity,
-    productId,
+  const order = await Order.create({
+    shippingInfo,
+    orderItems,
+    paymentInfo,
+    product,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    paidAt: Date.now(),
+    user: req.user._id,
   });
-  try {
-    if (initiatedBy === 'admin') {
-      const result = await order.save();
-      console.log(result);
-      res.status(200).json({
-        message: 'Order Added Successfully',
-        success: true,
-      });
-    } else {
-      res.status(403).json({
-        message: 'Forbidden Access',
-        failed: true,
-      });
-    }
-  } catch (err) {
-    res.status(500).json({
-      message: err.message,
+
+  return res.status(200).json({
+    success: true,
+    message: 'Order added successfully',
+  });
+});
+//Update orders shipping address
+exports.updateOrderAddress = catchAsyncErrors(async (req, res, next) => {
+  const { shippingInfo, id } = req.body;
+  //address
+
+  const order = await Order.findById(id);
+  if (!order) {
+    return next(new ErrorHandler('Order not found with this id', 404));
+  }
+
+  order.shippingInfo = shippingInfo;
+
+  await order.save({ validateBeforeSave: false });
+
+  return res.status(200).json({
+    success: true,
+    message: 'Order address updated successfully',
+  });
+});
+
+exports.generateOrderItems = catchAsyncErrors(async (req, res, next) => {
+  const { product, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body;
+  console.log(req.body);
+  const { _id } = req.user;
+
+  // const orderItems = [
+  //   {
+  //     productName,
+  //     productPrice,
+  //     quantity,
+  //     productImage,
+  //     productId,
+  //   },
+  // ];
+  const order = await Order.create({
+    orderItems,
+    product,
+    user: _id,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: 'Order created',
+  });
+});
+
+//Get all orders --- Admin
+exports.getAdminAllOrders = catchAsyncErrors(async (req, res, next) => {
+  const orders = await Order.find()
+    .populate('orderItems.product', 'name price image')
+    .populate('user', 'name email')
+    .select('orderItems user product shippingInfo');
+
+  let totalAmount = 0;
+  orders.forEach((order) => {
+    totalAmount += order.totalPrice;
+  });
+  if (orders.length != 0) {
+    return res.status(200).json({
+      success: true,
+      totalAmount,
+      orders,
+      count: orders.length,
+      message: 'Order items',
+    });
+  } else {
+    return next(new ErrorHandler('Order items not found', 404));
+  }
+});
+
+//Get All order
+exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
+  const user = req.user._id;
+
+  const order = await Order.find(user)
+    .populate('orderItems.product', 'name price image')
+    .populate('user', 'name email')
+    .select('orderItems user product shippingInfo');
+  console.log({ order });
+  if (order.length != 0) {
+    return res.status(200).json({
+      success: true,
+      order,
+      count: order.length,
+      message: 'Order items',
+    });
+  } else {
+    return next(new ErrorHandler('Order items not found', 404));
+  }
+});
+
+//Get single Order
+exports.getSingleOrder = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+  const order = await Order.findById(id)
+    .populate('orderItems.product', 'name price image')
+    .populate('user', 'name email')
+    .select('orderItems user product shippingInfo');
+
+  if (!order) {
+    return next(new ErrorHandler('Order items not found', 404));
+  }
+
+  return res.status(200).json({
+    success: true,
+    order,
+    message: 'Order items',
+  });
+});
+
+//Update order --- Admin
+exports.updateOrderAdmin = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+  const { status } = req.body;
+  const order = await Order.findById(id);
+
+  if (!order) {
+    return next(new ErrorHandler('Order not found with this id', 404));
+  }
+  if (order.orderStatus === 'Delivered') {
+    return next(new ErrorHandler('Your order has been delivered', 404));
+  }
+  if (order.orderStatus === 'Shipped') {
+    order.orderItems.forEach(async (o) => {
+      await updateStock(o.product, o.quantity);
     });
   }
-};
+  order.orderStatus = status;
 
-exports.update_order = async (req, res, next) => {
-  const { _id, quantity, productId } = req.body;
+  if (status === 'Delivered') {
+    order.deliveredAt = Date.now();
+  }
 
-  try {
-    const order = Order.findById({ _id });
-    if ((order.quantity === quantity) | (order.productId === productId)) {
-      return res.status(400).json({
-        message: 'No Changes Found',
-        failed: true,
-      });
-    }
-    const result = Order.findByIdAndUpdate(
-      { _id },
-      { $set: { quantity, productId } }
-    );
-    if (result) {
-      return res.status(200).json({
-        message: 'Updated Successfully',
-        success: true,
-      });
-    }
-  } catch (err) {
-    return res.status(500).json({
-      message: er.message,
-      failed: true,
+  await order.save({
+    validateBeforeSave: false,
+  });
+
+  return res.status(200).json({
+    success: true,
+    message: 'Order status updated successfully',
+  });
+});
+
+async function updateStock(id, quantity) {
+  const product = await Product.findById(id);
+
+  product.stock -= quantity;
+
+  await product.save({
+    validateBeforeSave: false,
+  });
+}
+
+//Delete order
+exports.deleteOrder = catchAsyncErrors(async (req, res, next) => {
+  const { id } = req.params;
+  const order = await Order.findById(id);
+
+  await order.remove();
+  if (!order) {
+    next(new ErrorHandler('Order not found', 404));
+  } else {
+    return res.status(200).json({
+      success: true,
+      message: 'Order deleted successfully',
     });
   }
-  Order.findByIdAndUpdate({ _id }, { $set: { quantity, productId } })
-    .exec()
-    .then((result) => {
-      res.status(200).json({
-        message: 'Updated Successfully',
-        success: true,
-      });
-    })
-    .catch((err) => {
-      return res.status(500).json({
-        message: err,
-      });
-    });
-};
-
-exports.delete_order = async (req, res, next) => {};
+});

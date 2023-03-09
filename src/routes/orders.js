@@ -1,18 +1,37 @@
 const express = require('express');
 const router = express.Router();
-
+const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 const OrdersController = require('../controllers/order.controller');
 
-//Get Orders
-router.post('/getOrder', OrdersController.orders_get_all);
+router.route('/new').post(isAuthenticatedUser, OrdersController.createOrder);
 
-//Add Orders
-router.post('/addOrder', OrdersController.add_order);
+router
+  .route('/create')
+  .post(isAuthenticatedUser, OrdersController.generateOrderItems);
 
-//Update Orders
-router.post('/updateOrder', OrdersController.update_order);
+router
+  .route('/admin')
+  .get(
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    OrdersController.getAdminAllOrders
+  );
+router.route('/me').get(isAuthenticatedUser, OrdersController.getAllOrders);
 
-//Delete Orders
-router.post('/deleteOrder', OrdersController.delete_order);
+router
+  .route('/:id')
+  .get(isAuthenticatedUser, OrdersController.getSingleOrder)
+  .delete(isAuthenticatedUser, OrdersController.deleteOrder);
 
+router
+  .route('/updateAddress/:id')
+  .put(isAuthenticatedUser, OrdersController.updateOrderAddress);
+
+router
+  .route('/admin/updateOrder/:id')
+  .put(
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    OrdersController.updateOrderAdmin
+  );
 module.exports = router;

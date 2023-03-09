@@ -49,6 +49,12 @@ const UserSchema = new mongoose.Schema(
       validate: [validator.isEmail, 'Please enter a valid email'],
       unique: true,
     },
+    phoneNo: {
+      type: Number,
+      required: [true, 'Please enter phone number'],
+      // validate:[valida]
+      unique: true,
+    },
     password: {
       type: String,
       required: [true, 'Please enter password'],
@@ -68,6 +74,10 @@ const UserSchema = new mongoose.Schema(
     role: {
       type: String,
       default: 'user',
+    },
+    isVerified: {
+      type: Boolean,
+      default: false,
     },
     resetPasswordToken: String,
     resetPasswordTime: Date,
@@ -109,7 +119,8 @@ UserSchema.methods.getResetToken = function () {
 // process.env.JWT_KEY
 UserSchema.methods.getJwtToken = function () {
   return jwt.sign({ id: this._id }, process.env.JWT_KEY, {
-    expiresIn: '5m',
+    expiresIn: '30m',
   });
 };
+
 module.exports = mongoose.model('User', UserSchema);
