@@ -8,9 +8,11 @@ const urlConvertor = require('../utils/urlConverter');
 
 //create product
 exports.create_product_store = catchAsyncErrors(async (req, res) => {
+  let imageUrl = req?.files?.map((file) => urlConvertor(file?.path));
   let product = req.body;
   const { _id } = req.user;
-  product = { ...product, user: _id };
+  product = { ...product, user: _id, imageUrl };
+
   await Product.create(product);
   return res.status(200).json({
     success: true,
@@ -20,15 +22,32 @@ exports.create_product_store = catchAsyncErrors(async (req, res) => {
 });
 
 exports.upload_image = catchAsyncErrors(async (req, res) => {
-  let imageUrl = req?.file?.path
-    ? urlConvertor(req?.file?.path)
-    : req?.files?.map((file) => urlConvertor(file?.path));
-
-  res.status(200).json({
-    success: true,
-    message: 'Uploaded Image',
-    imageUrl,
-  });
+  let imageUrl = req?.files?.map((file) => urlConvertor(file?.path));
+  console.log(req?.body);
+  const { _id } = req.body;
+  let product = await Product.findByIdAndUpdate(
+    _id,
+    {
+      imageUrl,
+    }
+    // {
+    //   new: true,
+    //   runValidators: true,
+    //   useUnified: false,
+    // }
+  );
+  if (!product) {
+    return res.status(404).json({
+      success: false,
+      message: 'Product Id invalid',
+    });
+  } else {
+    return res.status(200).json({
+      success: true,
+      product,
+      message: 'Product updated successfully',
+    });
+  }
 });
 //get all Products
 exports.get_all_products_store = catchAsyncErrors(async (req, res) => {
@@ -215,5 +234,24 @@ exports.deleteReview = catchAsyncErrors(async (req, res, next) => {
   return res.status(200).json({
     success: true,
     message: 'Review deleted successfully',
+  });
+});
+
+exports.uploadProductDetail = catchAsyncErrors(async (req, res, next) => {
+  const {
+    name,
+    description,
+    price,
+    color,
+    size,
+    imageUrl,
+    category,
+    stock,
+    user,
+  } = req.body;
+  console.log(req.file, 'body');
+  res.status(200).json({
+    success: true,
+    message: req,
   });
 });

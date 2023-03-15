@@ -14,6 +14,7 @@ router
   .post(
     isAuthenticatedUser,
     authorizeRoles('admin'),
+    uploadImage('image', 'products'),
     ProductsController.create_product_store
   );
 // update delete and get product

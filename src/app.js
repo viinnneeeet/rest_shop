@@ -28,7 +28,7 @@ app.use(cookieParser());
 // app.use(bodyParser.json());
 
 // parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: false, limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 // parse application/json
 app.use(express.json());
