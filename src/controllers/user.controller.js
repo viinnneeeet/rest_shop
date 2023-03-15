@@ -1,3 +1,4 @@
+const { getUsers } = require('../models/user.model');
 const User = require('../models/user.model');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
@@ -7,12 +8,14 @@ const crypto = require('crypto');
 
 //register user
 exports.create_user = catchAsyncErrors(async (req, res, next) => {
-  const { name, email, password } = req.body;
-  console.log({ name, email, password });
+  const { name, email, password, phoneNo, role } = req.body;
+
   const user = await User.create({
     name,
     email,
     password,
+    phoneNo,
+    role,
     avatar: {
       public_id: 'https://test.com',
       url: 'https//test.com',
@@ -74,6 +77,7 @@ exports.forgotPassword = catchAsyncErrors(async (req, res, next) => {
   const resetPasswordUrl = `${req.protocol}://${req.get(
     'host'
   )}/api/v2/user/password/reset/${resetToken}`;
+
   const message = `Your password reset token is :\n\n ${resetPasswordUrl}`;
 
   try {
@@ -197,7 +201,7 @@ exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
 // Get single users
 exports.getSingleUser = catchAsyncErrors(async (req, res, next) => {
   const { _id } = req.params;
-  // console.log(_id);
+
   const user = await User.findById({ _id });
 
   if (!user) {

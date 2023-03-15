@@ -2,9 +2,7 @@ const express = require('express');
 const app = express();
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
-const fileUpload = require('express-fileupload');
 const bodyParser = require('body-parser');
-const path = require('path');
 const morgan = require('morgan');
 
 const { logger } = require('./middlewares/logEvents');
@@ -18,25 +16,31 @@ const ErrorHandler = require('./middlewares/error');
 app.use(credentials);
 
 //Cross Origin resource Sharing
-app.use(cors(corsOptions));
+// app.use(cors(corsOptions));
+app.use(cors());
 
 //built-in middleware to handle urlencoded form data
 //built-in middleware for json
 
 app.use(cookieParser());
 
+// app.use(bodyParser.urlencoded({ extended: false }));
+// app.use(bodyParser.json());
+
 // parse application/x-www-form-urlencoded
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.urlencoded({ extended: false, limit: '50mb' }));
 
 // parse application/json
 app.use(express.json());
-
-app.use(fileUpload({ useTempFiles: true }));
 
 //Custom Middleware logger
 app.use(logger);
 // app.use(errorHandler);
 app.use(morgan('dev'));
+
+//static folder
+app.use(express.static('uploads'));
+
 // config
 if (process.env.NODE_ENV !== 'PRODUCTION') {
   require('dotenv').config({
@@ -65,6 +69,11 @@ app.use('/api/v2/order', order);
 // app.use('/api/v2', cart);
 
 // app.use(express.static(path.join(__dirname, '../frontend/build')));
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Welcome',
+  });
+});
 
 // app.get('*', (req, res) => {
 //   res.sendFile(path.resolve(__dirname, '../frontend/build/index.html'));

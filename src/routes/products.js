@@ -1,7 +1,10 @@
 const express = require('express');
 const router = express.Router();
+
 const ProductsController = require('../controllers/product.controller');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
+const { uploadImage } = require('../utils/upload');
+
 //Store
 //get all products
 router.route('/').get(ProductsController.get_all_products_store);
@@ -44,4 +47,9 @@ router
     authorizeRoles('admin'),
     ProductsController.deleteReview
   );
+
+router
+  .route('/upload/image')
+  .post(uploadImage('image', 'products'), ProductsController.upload_image);
+
 module.exports = router;

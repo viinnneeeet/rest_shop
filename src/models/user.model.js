@@ -50,9 +50,9 @@ const UserSchema = new mongoose.Schema(
       unique: true,
     },
     phoneNo: {
-      type: Number,
+      type: String,
       required: [true, 'Please enter phone number'],
-      // validate:[valida]
+      validate: [validator.isMobilePhone, 'Please enter a valid mobile number'],
       unique: true,
     },
     password: {

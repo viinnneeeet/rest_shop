@@ -55,7 +55,7 @@ exports.updateOrderAddress = catchAsyncErrors(async (req, res, next) => {
 
 exports.generateOrderItems = catchAsyncErrors(async (req, res, next) => {
   const { product, itemsPrice, taxPrice, shippingPrice, totalPrice } = req.body;
-  console.log(req.body);
+
   const { _id } = req.user;
 
   // const orderItems = [
@@ -115,7 +115,7 @@ exports.getAllOrders = catchAsyncErrors(async (req, res, next) => {
     .populate('orderItems.product', 'name price image')
     .populate('user', 'name email')
     .select('orderItems user product shippingInfo');
-  console.log({ order });
+
   if (order.length != 0) {
     return res.status(200).json({
       success: true,

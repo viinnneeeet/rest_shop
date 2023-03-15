@@ -2,12 +2,16 @@ const Product = require('../models/Product.model');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const Features = require('../utils/Features');
+const urlConvertor = require('../utils/urlConverter');
 
 //Store
 
 //create product
 exports.create_product_store = catchAsyncErrors(async (req, res) => {
-  const product = await Product.create(req.body);
+  let product = req.body;
+  const { _id } = req.user;
+  product = { ...product, user: _id };
+  await Product.create(product);
   return res.status(200).json({
     success: true,
     product,
@@ -15,6 +19,17 @@ exports.create_product_store = catchAsyncErrors(async (req, res) => {
   });
 });
 
+exports.upload_image = catchAsyncErrors(async (req, res) => {
+  let imageUrl = req?.file?.path
+    ? urlConvertor(req?.file?.path)
+    : req?.files?.map((file) => urlConvertor(file?.path));
+
+  res.status(200).json({
+    success: true,
+    message: 'Uploaded Image',
+    imageUrl,
+  });
+});
 //get all Products
 exports.get_all_products_store = catchAsyncErrors(async (req, res) => {
   const resultPerPage = 5;
@@ -141,7 +156,7 @@ exports.createProductReview = catchAsyncErrors(async (req, res, next) => {
 exports.getSingleProductReviews = catchAsyncErrors(async (req, res, next) => {
   const { id } = req.params;
   // const { id } = req.query;
-  console.log(req);
+
   const product = await Product.findById(id);
 
   if (!product) {
