@@ -49,8 +49,23 @@ router
     ProductsController.deleteReview
   );
 
+//upload product  image
 router
   .route('/upload/image')
-  .post(uploadImage('image', 'products'), ProductsController.upload_image);
+  .post(
+    uploadImage('image', 'products'),
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    ProductsController.upload_image
+  );
+
+// delete product image
+router
+  .route('/delete/image')
+  .post(
+    isAuthenticatedUser,
+    authorizeRoles('admin'),
+    ProductsController.deleteProductImage
+  );
 
 module.exports = router;

@@ -3,7 +3,8 @@ const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const Features = require('../utils/Features');
 const urlConvertor = require('../utils/urlConverter');
-
+const deleteImageFile = require('../utils/deleteImageFile');
+const fs = require('fs');
 //Store
 
 //create product
@@ -20,34 +21,42 @@ exports.create_product_store = catchAsyncErrors(async (req, res) => {
     message: 'Product Created',
   });
 });
-
+//upload image
 exports.upload_image = catchAsyncErrors(async (req, res) => {
   let imageUrl = req?.files?.map((file) => urlConvertor(file?.path));
-  console.log(req?.body);
+
   const { _id } = req.body;
-  let product = await Product.findByIdAndUpdate(
-    _id,
-    {
-      imageUrl,
-    }
-    // {
-    //   new: true,
-    //   runValidators: true,
-    //   useUnified: false,
-    // }
-  );
-  if (!product) {
-    return res.status(404).json({
-      success: false,
-      message: 'Product Id invalid',
+
+  let product = await Product.findById(_id);
+
+  product.imageUrl.push(...imageUrl);
+  // to insert new and remove previous image
+  // product.imageUrl = imageUrl;
+
+  await product.save();
+
+  return res.status(200).json({
+    success: true,
+    product,
+    message: 'Product updated successfully',
+  });
+});
+//delete image
+exports.deleteProductImage = catchAsyncErrors(async (req, res) => {
+  const { _id, imageName } = req.body;
+  const isImage = await deleteImageFile(imageName);
+  let product = await Product.findById(_id);
+  if (isImage) {
+    product.imageUrl = product.imageUrl.filter((image) => {
+      const imageNameFilter = image.split('products/')[1];
+      return imageName !== imageNameFilter;
     });
-  } else {
-    return res.status(200).json({
-      success: true,
-      product,
-      message: 'Product updated successfully',
-    });
+    await product.save();
   }
+  res.status(200).json({
+    success: isImage.success,
+    message: isImage.message,
+  });
 });
 //get all Products
 exports.get_all_products_store = catchAsyncErrors(async (req, res) => {

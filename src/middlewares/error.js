@@ -31,6 +31,11 @@ module.exports = (err, req, res, next) => {
     const message = `Your url is expired please try again`;
     err = new ErrorHandler(message, 400);
   }
+  //
+  if (err.code === 'ENOENT') {
+    const message = 'File name is invalid';
+    err = new ErrorHandler(message, 400);
+  }
 
   res.status(err.statusCode).json({
     success: false,
