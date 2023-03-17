@@ -5,15 +5,39 @@ const Features = require('../utils/Features');
 const urlConvertor = require('../utils/urlConverter');
 const deleteImageFile = require('../utils/deleteImageFile');
 const fs = require('fs');
+const { default: mongoose } = require('mongoose');
 //Store
 
+async function getImage(_id, imageId) {
+  const product = await Product.findById(_id);
+
+  const [{ url }] = product.imageUrl.filter(
+    (image) => image._id.toString() == imageId
+  );
+
+  const isImage = deleteImageFile(url);
+
+  if (isImage.success) {
+    product.imageUrl = product?.imageUrl?.filter((image) => {
+      return imageId !== image._id.toString();
+    });
+    await product.save();
+  }
+
+  return { product, isImage };
+}
 //create product
 exports.create_product_store = catchAsyncErrors(async (req, res) => {
-  let imageUrl = req?.files?.map((file) => urlConvertor(file?.path));
+  let imageUrl = req?.files?.map((file) => {
+    return {
+      _id: new mongoose.Types.ObjectId(),
+      url: urlConvertor(file?.path),
+      name: file?.originalname,
+    };
+  });
   let product = req.body;
   const { _id } = req.user;
   product = { ...product, user: _id, imageUrl };
-
   await Product.create(product);
   return res.status(200).json({
     success: true,
@@ -23,8 +47,13 @@ exports.create_product_store = catchAsyncErrors(async (req, res) => {
 });
 //upload image
 exports.upload_image = catchAsyncErrors(async (req, res) => {
-  let imageUrl = req?.files?.map((file) => urlConvertor(file?.path));
-
+  let imageUrl = req?.files?.map((file) => {
+    return {
+      _id: new mongoose.Types.ObjectId(),
+      url: urlConvertor(file?.path),
+      name: file?.originalname,
+    };
+  });
   const { _id } = req.body;
 
   let product = await Product.findById(_id);
@@ -43,16 +72,11 @@ exports.upload_image = catchAsyncErrors(async (req, res) => {
 });
 //delete image
 exports.deleteProductImage = catchAsyncErrors(async (req, res) => {
-  const { _id, imageName } = req.body;
-  const isImage = await deleteImageFile(imageName);
-  let product = await Product.findById(_id);
-  if (isImage) {
-    product.imageUrl = product.imageUrl.filter((image) => {
-      const imageNameFilter = image.split('products/')[1];
-      return imageName !== imageNameFilter;
-    });
-    await product.save();
-  }
+  const { _id, imageId } = req.body;
+
+  const { isImage, product } = await getImage(_id, imageId);
+
+  await product.save();
   res.status(200).json({
     success: isImage.success,
     message: isImage.message,
@@ -69,14 +93,20 @@ exports.get_all_products_store = catchAsyncErrors(async (req, res) => {
     .filter()
     .pagination(resultPerPage);
   const products = await feature.query;
-
-  return res.status(200).json({
-    success: true,
-    products,
-    message: 'Product lists',
-    count: products.length,
-    totalCount,
-  });
+  if (products.length > 0) {
+    return res.status(200).json({
+      success: true,
+      data: products,
+      message: 'Product lists',
+      count: products.length,
+      totalCount,
+    });
+  } else {
+    return res.status(200).json({
+      success: true,
+      message: 'No products',
+    });
+  }
 });
 
 // single product

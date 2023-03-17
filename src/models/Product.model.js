@@ -1,5 +1,42 @@
 const mongoose = require('mongoose');
 //Store Model
+
+const ImageSchema = new mongoose.Schema({
+  id: {
+    type: mongoose.Schema.ObjectId,
+  },
+  url: {
+    type: String,
+    required: [true, 'Please upload product image'],
+  },
+  name: {
+    type: String,
+    required: [true, 'Please enter product image title'],
+  },
+});
+const ReviewSchema = new mongoose.Schema({
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: 'User',
+    required: true,
+  },
+  name: {
+    type: String,
+    required: true,
+  },
+  rating: {
+    type: Number,
+    required: true,
+  },
+  comment: {
+    type: String,
+  },
+  time: {
+    type: Date,
+    default: Date.now(),
+  },
+});
+
 const ProductSchema = new mongoose.Schema(
   {
     name: {
@@ -29,12 +66,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    imageUrl: [
-      {
-        type: String,
-        required: [true, 'Please upload product image'],
-      },
-    ],
+    imageUrl: {
+      type: [ImageSchema],
+      default: [],
+    },
     category: {
       type: String,
       required: [true, 'Please add a category of your product'],
@@ -48,30 +83,10 @@ const ProductSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
-    reviews: [
-      {
-        user: {
-          type: mongoose.Schema.ObjectId,
-          ref: 'User',
-          required: true,
-        },
-        name: {
-          type: String,
-          required: true,
-        },
-        rating: {
-          type: Number,
-          required: true,
-        },
-        comment: {
-          type: String,
-        },
-        time: {
-          type: Date,
-          default: Date.now(),
-        },
-      },
-    ],
+    reviews: {
+      type: [ReviewSchema],
+      default: [],
+    },
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',

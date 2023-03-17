@@ -22,7 +22,8 @@ exports.uploadImage = (key, folderName) => {
       return cb(null, `./uploads/${folderName}`);
     },
     filename: function (req, files, cb) {
-      const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
+      const uniqueSuffix = Date.now();
       return cb(null, uniqueSuffix + '-' + files.originalname);
     },
   });
