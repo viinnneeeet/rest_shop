@@ -5,7 +5,9 @@ const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
 const sendMail = require('../utils/sendMail');
+const urlConvertor = require('../utils/urlConverter');
 const crypto = require('crypto');
+const { default: mongoose } = require('mongoose');
 
 //register user
 exports.create_user = catchAsyncErrors(async (req, res, next) => {
@@ -16,11 +18,7 @@ exports.create_user = catchAsyncErrors(async (req, res, next) => {
     email,
     password,
     phoneNo,
-    role,
-    avatar: {
-      public_id: 'https://test.com',
-      url: 'https//test.com',
-    },
+    role: role || 'user',
   });
   return sendToken(user, 200, res, 'User Created');
 });
@@ -169,11 +167,19 @@ exports.updateUserPassword = catchAsyncErrors(async (req, res, next) => {
 // Update user profile
 exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
   const { name, email, role } = req.body;
+  let avatar = req?.files?.map((file) => {
+    return {
+      _id: new mongoose.Types.ObjectId(),
+      url: urlConvertor(file?.path),
+    };
+  });
+  console.log(req?.files, 'files');
   const _id = req.user;
   const newUserData = {
     name,
     email,
     // role,
+    avatar,
   };
 
   const user = await User.findByIdAndUpdate(_id, newUserData, {

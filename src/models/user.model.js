@@ -62,13 +62,11 @@ const UserSchema = new mongoose.Schema(
       select: false,
     },
     avatar: {
-      public_id: {
-        type: String,
-        required: true,
+      _id: {
+        type: mongoose.Schema.ObjectId,
       },
       url: {
         type: String,
-        required: true,
       },
     },
     role: {

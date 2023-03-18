@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/user.controller');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
+const { uploadImage } = require('../utils/upload');
 //Store
 
 router.route('/registration').post(UserController.create_user);
@@ -20,7 +21,11 @@ router
 
 router
   .route('/me/update/profile')
-  .post(isAuthenticatedUser, UserController.updateUserProfile);
+  .post(
+    isAuthenticatedUser,
+    uploadImage('image', 'users'),
+    UserController.updateUserProfile
+  );
 
 router.route('/me').get(isAuthenticatedUser, UserController.getUserDetails);
 

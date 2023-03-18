@@ -4,6 +4,7 @@ const fsPromise = require('fs').promises;
 const path = require('path');
 
 exports.uploadImage = (key, folderName) => {
+  console.log(key, folderName);
   async function checkFile(folderName) {
     try {
       if (!fs.existsSync(path.join(__dirname, '../../uploads/', folderName))) {
@@ -21,12 +22,14 @@ exports.uploadImage = (key, folderName) => {
     destination: function (req, files, cb) {
       return cb(null, `./uploads/${folderName}`);
     },
+
     filename: function (req, files, cb) {
       // const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1e9);
       const uniqueSuffix = Date.now();
       return cb(null, uniqueSuffix + '-' + files.originalname);
     },
   });
+
   return (multi_upload = multer({
     storage,
     limits: { fileSize: 10000000 },
