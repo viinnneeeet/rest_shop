@@ -6,6 +6,7 @@ class Features {
 
   search() {
     //{{DOMAIN}}/api/v/products?keyword=Pizza
+
     const keyword = this.queryStr.keyword
       ? {
           name: {
@@ -14,8 +15,7 @@ class Features {
           },
         }
       : {};
-    // console.log(,this.queryStr , 'queryStr');
-    // console.log(this.query, 'query');
+
     this.query = this.query.find({ ...keyword });
     return this;
     //return Instance so that  ..new QH().search().filter().paginate()
@@ -31,10 +31,38 @@ class Features {
     removeFields.forEach((key) => delete queryCopy[key]);
     //Advance Filter for Price rating....etc
 
-    let qStr = JSON.stringify(queryCopy);
+    //optimize way
+    // const queryKey = Object.keys(queryCopy);
+    // let qStr = {};
+    // queryKey.forEach((key) => {
+    //   const value = queryCopy[key];
+    //   qStr.push(
+    //     JSON.stringify({
+    //       key: { $regex: value, $options: 'i' },
+    //     })
+    //   );
+    // });
+
+    //old implementation
+    // let qStr = JSON.stringify(queryCopy);
+
+    const [key1, key2, key3] = Object.keys(queryCopy);
+    const [value1, value2, value3] = Object.values(queryCopy);
+
+    let qStr = JSON.stringify({
+      name: { $regex: value1, $options: 'i' },
+      name2: { $regex: value2, $options: 'i' },
+      name3: { $regex: value3, $options: 'i' },
+    });
+
+    qStr = qStr.replace('name', key1);
+    qStr = qStr.replace('name2', key2);
+    qStr = qStr.replace('name2', key3);
+
     qStr = qStr.replace(/\b(gt|gte|lt|lte)\b/g, (with$) => `$${with$}`);
-    console.log(qStr);
+
     this.query = this.query.find(JSON.parse(qStr));
+
     return this;
   }
 

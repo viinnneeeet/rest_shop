@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 
 const ProductsController = require('../controllers/product.controller');
+const ProductReviewController = require('../controllers/product.review.controller');
+
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 const { uploadImage } = require('../utils/upload');
 
@@ -35,10 +37,12 @@ router
 //Create Review
 router
   .route('/review')
-  .post(isAuthenticatedUser, ProductsController.createProductReview);
+  .post(isAuthenticatedUser, ProductReviewController.createProductReview);
 
 //single reviews
-router.route('/reviews/:id').get(ProductsController.getSingleProductReviews);
+router
+  .route('/reviews/:id')
+  .get(ProductReviewController.getSingleProductReviews);
 
 //Delete reviews
 router
@@ -46,7 +50,7 @@ router
   .post(
     isAuthenticatedUser,
     authorizeRoles('admin'),
-    ProductsController.deleteReview
+    ProductReviewController.deleteReview
   );
 
 //upload product  image

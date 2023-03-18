@@ -14,6 +14,7 @@ const ImageSchema = new mongoose.Schema({
     required: [true, 'Please enter product image title'],
   },
 });
+
 const ReviewSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.ObjectId,

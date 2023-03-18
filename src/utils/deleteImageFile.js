@@ -1,6 +1,5 @@
 const fs = require('fs');
 function deleteImageFile(imageName) {
-  console.log(imageName, 'imageName');
   const name = imageName.split('/')[1];
   const DIR = 'uploads/products';
   if (!imageName) {

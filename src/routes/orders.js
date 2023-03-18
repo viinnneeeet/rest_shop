@@ -6,10 +6,6 @@ const OrdersController = require('../controllers/order.controller');
 router.route('/new').post(isAuthenticatedUser, OrdersController.createOrder);
 
 router
-  .route('/create')
-  .post(isAuthenticatedUser, OrdersController.generateOrderItems);
-
-router
   .route('/admin')
   .get(
     isAuthenticatedUser,

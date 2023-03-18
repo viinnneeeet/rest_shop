@@ -1,5 +1,6 @@
 const { getUsers } = require('../models/user.model');
 const User = require('../models/user.model');
+const Features = require('../utils/Features');
 const ErrorHandler = require('../utils/ErrorHandler');
 const catchAsyncErrors = require('../middlewares/catchAsyncErrors');
 const sendToken = require('../utils/jwtToken');
@@ -189,10 +190,24 @@ exports.updateUserProfile = catchAsyncErrors(async (req, res, next) => {
 
 // Get all users
 exports.getAllUsers = catchAsyncErrors(async (req, res, next) => {
-  const users = await User.find();
+  const resultPerPage = 1;
+  const totalCount = await User.countDocuments();
 
+  const feature = new Features(User.find(), req.query)
+    .search()
+    .filter()
+    .pagination(resultPerPage);
+  const users = await feature.query;
+
+  if (!users.length > 0) {
+    return res.status(200).json({
+      success: false,
+      message: 'No user found',
+    });
+  }
   return res.status(200).json({
-    users,
+    data: users,
+    totalCount,
     success: true,
     message: 'Users Details',
   });

@@ -4,7 +4,7 @@ const UserController = require('../controllers/user.controller');
 const { isAuthenticatedUser, authorizeRoles } = require('../middlewares/auth');
 
 router
-  .route('/users')
+  .route('/getUsers')
   .get(
     isAuthenticatedUser,
     authorizeRoles('admin'),

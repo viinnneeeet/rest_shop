@@ -1,7 +1,6 @@
 const allowedOrigins = require('./allowedOrigins');
 module.exports = {
   origin: (origin, callback) => {
-    console.log(origin);
     if (allowedOrigins.indexOf(origin) !== -1) {
       callback(null, true);
     } else {

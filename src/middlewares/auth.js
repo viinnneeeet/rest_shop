@@ -24,7 +24,6 @@ exports.authorizeRoles = (...roles) => {
   return (req, res, next) => {
     // console.log(req.user.role, 'role');
     if (!roles.includes(req.user.role)) {
-      console.log('exe');
       return next(
         new ErrorHandler(`${req.user.role} can not access this resources`)
       );
