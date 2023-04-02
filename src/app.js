@@ -49,6 +49,7 @@ if (process.env.NODE_ENV !== 'PRODUCTION') {
 }
 
 // Route imports
+const auth = require('./routes/auth');
 const product = require('./routes/products');
 const user = require('./routes/users');
 const admin = require('./routes/admin');
@@ -56,13 +57,15 @@ const order = require('./routes/orders');
 // const payment = require('./routes/PaymentRoute');
 // const cart = require('./routes/WishListRoute');
 
-app.use('/api/v2/product', product);
+app.use('/api/v1/auth', auth);
 
-app.use('/api/v2/user', user);
+app.use('/api/v1/user', user);
 
-app.use('/api/v2/admin', admin);
+app.use('/api/v1/admin', admin);
 
-app.use('/api/v2/order', order);
+app.use('/api/v1/product', product);
+
+app.use('/api/v1/order', order);
 
 // app.use('/api/v2', payment);
 

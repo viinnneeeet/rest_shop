@@ -4,7 +4,6 @@ const fsPromise = require('fs').promises;
 const path = require('path');
 
 exports.uploadImage = (key, folderName) => {
-  console.log(key, folderName);
   async function checkFile(folderName) {
     try {
       if (!fs.existsSync(path.join(__dirname, '../../uploads/', folderName))) {
@@ -30,19 +29,35 @@ exports.uploadImage = (key, folderName) => {
     },
   });
 
-  return (multi_upload = multer({
-    storage,
-    limits: { fileSize: 10000000 },
-    fileFilter: function (req, file, cb) {
-      if (
-        !file.originalname.match(
-          /\.(jpg|JPG|webp|jpeg|JPEG|png|PNG|gif|GIF|jfif|JFIF)$/
-        )
-      ) {
-        req.fileValidationError = 'Only image files are allowed!';
-        return cb(null, false);
-      }
-      cb(null, true);
-    },
-  }).array(key, 2));
+  return folderName === 'products'
+    ? (multi_upload = multer({
+        storage,
+        limits: { fileSize: 10000000 },
+        fileFilter: function (req, file, cb) {
+          if (
+            !file.originalname.match(
+              /\.(jpg|JPG|webp|jpeg|JPEG|png|PNG|gif|GIF|jfif|JFIF)$/
+            )
+          ) {
+            req.fileValidationError = 'Only image files are allowed!';
+            return cb(null, false);
+          }
+          cb(null, true);
+        },
+      }).array(key, 2))
+    : (multi_upload = multer({
+        storage,
+        limits: { fileSize: 10000000 },
+        fileFilter: function (req, file, cb) {
+          if (
+            !file.originalname.match(
+              /\.(jpg|JPG|webp|jpeg|JPEG|png|PNG|gif|GIF|jfif|JFIF)$/
+            )
+          ) {
+            req.fileValidationError = 'Only image files are allowed!';
+            return cb(null, false);
+          }
+          cb(null, true);
+        },
+      }).single(key));
 };

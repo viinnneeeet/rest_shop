@@ -9,6 +9,7 @@ const sendToken = (user, statusCode, res, message) => {
     ),
     httpOnly: true,
   };
+  // const otp = sendOTPVerificationEmail(user._id, user.email, res);
 
   res.status(statusCode).cookie('token', token, options).json({
     success: true,

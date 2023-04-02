@@ -9,8 +9,11 @@ coverage
 # production
 build
 
+#images
+uploads/products
+uploads/users
+
 # misc
 .DS_Store
 .env
 npm-debug.log
-/uploads
