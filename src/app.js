@@ -4,7 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-const serverless = require('serverless-http');
+const router = express.Router();
 const { logger } = require('./middlewares/logEvents');
 const credentials = require('./middlewares/credentials');
 
@@ -41,6 +41,7 @@ app.use(morgan('dev'));
 //static folder
 app.use(express.static('uploads'));
 
+app.use('/.netlify/functions/api', router);
 // config
 if (process.env.NODE_ENV !== 'PRODUCTION') {
   require('dotenv').config({
@@ -86,4 +87,3 @@ app.get('/', (req, res) => {
 app.use(ErrorHandler);
 
 module.exports = app;
-module.exports.handler = serverless(app);
