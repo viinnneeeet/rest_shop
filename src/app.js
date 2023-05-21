@@ -4,7 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
-
+const serverless = require('serverless-http');
 const { logger } = require('./middlewares/logEvents');
 const credentials = require('./middlewares/credentials');
 
@@ -86,3 +86,4 @@ app.get('/', (req, res) => {
 app.use(ErrorHandler);
 
 module.exports = app;
+module.exports.handler = serverless(app);
