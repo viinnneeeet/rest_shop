@@ -9,6 +9,8 @@ router.route('/verifyOtp').post(SignInController?.verifyOtp);
 
 router.route('/registration').post(SignInController?.create_user);
 
+router.route('/registration/admin').post(SignInController.create_admin);
+
 router.route('/login').post(SignInController?.loginUser);
 
 router.route('/logout').get(SignInController.logoutUser);

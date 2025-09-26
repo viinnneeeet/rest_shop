@@ -17,6 +17,8 @@ router
     UserController.updateUserProfile
   );
 
+//shipping address
+
 router.route('/').get(isAuthenticatedUser, UserController.getUserDetails);
 
 module.exports = router;

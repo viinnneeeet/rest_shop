@@ -12,6 +12,7 @@ const ImageSchema = new mongoose.Schema({
   name: {
     type: String,
     required: [true, 'Please enter product image title'],
+    minLength: [3, 'Please Enter a product '],
   },
 });
 

@@ -72,4 +72,8 @@ router
     ProductsController.deleteProductImage
   );
 
+//add category
+
+//
+
 module.exports = router;

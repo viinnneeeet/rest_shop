@@ -4,6 +4,7 @@ const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const multer = require('multer');
 const router = express.Router();
 const { logger } = require('./middlewares/logEvents');
 const credentials = require('./middlewares/credentials');
@@ -18,7 +19,8 @@ app.use(credentials);
 //Cross Origin resource Sharing
 // app.use(cors(corsOptions));
 app.use(cors());
-
+const storage = multer.memoryStorage();
+const upload = multer({ storage });
 //built-in middleware to handle urlencoded form data
 //built-in middleware for json
 
@@ -55,6 +57,7 @@ const product = require('./routes/products');
 const user = require('./routes/users');
 const admin = require('./routes/admin');
 const order = require('./routes/orders');
+const gallery = require('./routes/gallery');
 // const payment = require('./routes/PaymentRoute');
 // const cart = require('./routes/WishListRoute');
 
@@ -67,6 +70,8 @@ app.use('/api/v1/admin', admin);
 app.use('/api/v1/product', product);
 
 app.use('/api/v1/order', order);
+
+app.use('/api/v1/gallery', gallery);
 
 // app.use('/api/v2', payment);
 
