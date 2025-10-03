@@ -1,19 +1,21 @@
 const express = require('express');
+const GalleryController = require('../controllers/gallery.controller');
+
 const router = express.Router();
-const multer = require('multer');
-const {
-  uploadImage,
-  deleteImage,
-} = require('../controllers/gallery.controller');
 
-// Multer setup (memory storage since we're streaming to Cloudinary)
-const storage = multer.memoryStorage();
-const upload = multer({ storage });
+// ✅ Create a new gallery item
+router.post('/', GalleryController.createGallery);
 
-// Route
-router.post('/upload', upload.single('file'), uploadImage);
+// ✅ Get all active gallery items
+router.get('/', GalleryController.getAllGallery);
 
-// Delete route
-router.delete('/delete/:publicId', deleteImage);
+// ✅ Get gallery item by ID
+router.get('/:id', GalleryController.getGalleryById);
+
+// ✅ Update a gallery item by ID
+router.put('/:id', GalleryController.updateGallery);
+
+// ✅ Soft delete a gallery item (set isActive = false)
+router.delete('/:id', GalleryController.deleteGallery);
 
 module.exports = router;

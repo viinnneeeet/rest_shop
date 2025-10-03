@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 const UserController = require('../controllers/user.controller');
 const { isAuthenticatedUser } = require('../middlewares/auth');
-const { uploadImage } = require('../utils/upload');
 //Store
 
 router
@@ -11,11 +10,7 @@ router
 
 router
   .route('/update')
-  .post(
-    isAuthenticatedUser,
-    uploadImage('image', 'users'),
-    UserController.updateUserProfile
-  );
+  .post(isAuthenticatedUser, UserController.updateUserProfile);
 
 //shipping address
 

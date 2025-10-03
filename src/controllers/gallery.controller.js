@@ -1,70 +1,103 @@
-const { v2: cloudinary } = require('cloudinary');
-const streamifier = require('streamifier');
+const GalleryService = require('../services/gallery.service');
+const { createGallerySchema } = require('../validations/gallery.validation');
+const ResponseHandler = require('../utils/responseHandler');
 
-// Upload image controller
-exports.uploadImage = async (req, res) => {
+async function createGallery(req, res) {
   try {
-    const file = req.file;
-    if (!file) {
-      return res.status(400).json({ message: 'No file uploaded' });
+    const { error, value } = createGallerySchema.validate(req.body);
+    if (error) {
+      return ResponseHandler.badRequest(res, error.details[0].message);
     }
 
-    const { fileName } = req?.query;
-
-    // Wrap upload_stream in a Promise for async/await
-    const uploadToCloudinary = () =>
-      new Promise((resolve, reject) => {
-        const stream = cloudinary.uploader.upload_stream(
-          {
-            resource_type: 'auto',
-            folder: 'gallery',
-            public_id: fileName || 'image_1', // use query param or default
-            overwrite: true,
-          },
-          (error, result) => {
-            if (error) reject(error);
-            else resolve(result);
-          }
-        );
-        streamifier.createReadStream(file.buffer).pipe(stream);
-      });
-
-    const result = await uploadToCloudinary();
-
-    res.json({
-      message: 'Upload successful',
-      publicUrl: result.secure_url,
-      cloudinaryResponse: result,
-    });
+    const gallery = await GalleryService.createGallery(value);
+    return ResponseHandler.success(
+      res,
+      gallery,
+      'Gallery item created successfully',
+      201
+    );
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Upload failed', details: err.message });
+    return ResponseHandler.error(res, err.message, err);
   }
-};
+}
 
-// Delete image controller
-exports.deleteImage = async (req, res) => {
+async function getAllGallery(req, res) {
   try {
-    const { publicId } = req.params; // expect /delete/:publicId
+    const galleryList = await GalleryService.getAllGallery();
+    return ResponseHandler.success(
+      res,
+      galleryList,
+      'Gallery list fetched successfully'
+    );
+  } catch (err) {
+    return ResponseHandler.error(res, err.message, err);
+  }
+}
 
-    if (!publicId) {
-      return res.status(400).json({ message: 'publicId is required' });
+async function getGalleryById(req, res) {
+  try {
+    const { id } = req.params;
+    const gallery = await GalleryService.getGalleryById(id);
+
+    if (!gallery) {
+      return ResponseHandler.notFound(res, 'Gallery item not found');
     }
 
-    const result = await cloudinary.uploader.destroy(`gallery/${publicId}`, {
-      resource_type: 'image',
-    });
+    return ResponseHandler.success(
+      res,
+      gallery,
+      'Gallery item fetched successfully'
+    );
+  } catch (err) {
+    return ResponseHandler.error(res, err.message, err);
+  }
+}
 
-    if (result.result === 'not found') {
-      return res.status(404).json({ message: 'Image not found' });
+async function updateGallery(req, res) {
+  try {
+    const { id } = req.params;
+    const updatedData = req.body;
+
+    const gallery = await GalleryService.updateGallery(id, updatedData);
+
+    if (!gallery) {
+      return ResponseHandler.notFound(res, 'Gallery item not found');
     }
 
-    res.json({
-      message: 'Delete successful',
+    return ResponseHandler.success(
+      res,
+      gallery,
+      'Gallery item updated successfully'
+    );
+  } catch (err) {
+    return ResponseHandler.error(res, err.message, err);
+  }
+}
+
+async function deleteGallery(req, res) {
+  try {
+    const { id } = req.params;
+
+    const gallery = await GalleryService.getGalleryById(id);
+    if (!gallery) {
+      return ResponseHandler.notFound(res, 'Gallery item not found');
+    }
+
+    const result = await GalleryService.deleteGallery(id);
+    return ResponseHandler.success(
+      res,
       result,
-    });
+      'Gallery item deleted (soft delete)'
+    );
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Delete failed', details: err.message });
+    return ResponseHandler.error(res, err.message, err);
   }
+}
+
+module.exports = {
+  createGallery,
+  getAllGallery,
+  getGalleryById,
+  updateGallery,
+  deleteGallery,
 };
