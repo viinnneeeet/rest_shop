@@ -7,7 +7,7 @@ module.exports = (sequelize, DataTypes) => {
         primaryKey: true,
         autoIncrement: true,
       },
-      src: {
+      image_url: {
         type: DataTypes.STRING,
         allowNull: false,
       },

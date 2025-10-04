@@ -4,18 +4,18 @@ const GalleryController = require('../controllers/gallery.controller');
 const router = express.Router();
 
 // ✅ Create a new gallery item
-router.post('/', GalleryController.createGallery);
+router.post('/create-gallery', GalleryController.createGallery);
 
 // ✅ Get all active gallery items
-router.get('/', GalleryController.getAllGallery);
+router.get('/get-gallery', GalleryController.getAllGallery);
 
 // ✅ Get gallery item by ID
-router.get('/:id', GalleryController.getGalleryById);
+router.get('/get-gallery/:id', GalleryController.getGalleryById);
 
 // ✅ Update a gallery item by ID
-router.put('/:id', GalleryController.updateGallery);
+router.put('/update-gallery/:id', GalleryController.updateGallery);
 
 // ✅ Soft delete a gallery item (set isActive = false)
-router.delete('/:id', GalleryController.deleteGallery);
+router.delete('/delete-gallery/:id', GalleryController.deleteGallery);
 
 module.exports = router;
