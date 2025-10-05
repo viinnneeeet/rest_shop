@@ -13,7 +13,7 @@ router.get('/get-gallery', GalleryController.getAllGallery);
 router.get('/get-gallery/:id', GalleryController.getGalleryById);
 
 // ✅ Update a gallery item by ID
-router.put('/update-gallery/:id', GalleryController.updateGallery);
+router.post('/update-gallery', GalleryController.updateGallery);
 
 // ✅ Soft delete a gallery item (set isActive = false)
 router.delete('/delete-gallery/:id', GalleryController.deleteGallery);

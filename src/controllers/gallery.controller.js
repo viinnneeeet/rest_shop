@@ -1,5 +1,8 @@
 const GalleryService = require('../services/gallery.service');
-const { createGallerySchema } = require('../validations/gallery.validation');
+const {
+  createGallerySchema,
+  updateGallerySchema,
+} = require('../validations/gallery.validation');
 const ResponseHandler = require('../utils/responseHandler');
 
 async function createGallery(req, res) {
@@ -55,10 +58,13 @@ async function getGalleryById(req, res) {
 
 async function updateGallery(req, res) {
   try {
-    const { id } = req.params;
+    const { id } = req.body;
     const updatedData = req.body;
-
-    const gallery = await GalleryService.updateGallery(id, updatedData);
+    const { error, value } = updateGallerySchema.validate(updatedData);
+    if (error) {
+      return ResponseHandler.badRequest(res, error.details[0].message);
+    }
+    const gallery = await GalleryService.updateGallery(id, value);
 
     if (!gallery) {
       return ResponseHandler.notFound(res, 'Gallery item not found');

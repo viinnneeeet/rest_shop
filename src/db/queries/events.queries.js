@@ -7,7 +7,6 @@ const CREATE_TABLE_EVENTS = `CREATE TABLE IF NOT EXISTS events (
     type VARCHAR(50) NOT NULL,
     time VARCHAR(50) NOT NULL,
     location VARCHAR(100) NOT NULL,
-    attendees INT NOT NULL,
     description VARCHAR(255),
     isActive BOOLEAN NOT NULL DEFAULT TRUE,
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -16,8 +15,8 @@ const CREATE_TABLE_EVENTS = `CREATE TABLE IF NOT EXISTS events (
 `;
 // Insert new event
 const INSERT_EVENT = `
-  INSERT INTO events (date, title, type, time, location, attendees, description, isActive, createdAt, updatedAt)
-  VALUES (:date, :title, :type, :time, :location, :attendees, :description, :isActive, NOW(), NOW());
+  INSERT INTO events (date, title, type, time, location, description, isActive, createdAt, updatedAt, image_url, participants, status)
+  VALUES (:date, :title, :type, :time, :location, :description, :isActive, NOW(), NOW(), :image_url, :participants, :status);
 `;
 
 // Select all active events
@@ -43,9 +42,11 @@ const UPDATE_EVENT = `
       type = :type,
       time = :time,
       location = :location,
-      attendees = :attendees,
       description = :description,
       isActive = :isActive,
+      image_url = :image_url,
+      participants = :participants,
+      status = :status,
       updatedAt = NOW()
   WHERE id = :id;
 `;

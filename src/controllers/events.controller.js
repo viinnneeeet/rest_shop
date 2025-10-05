@@ -1,6 +1,9 @@
 const EventService = require('../services/events.service');
 const ResponseHandler = require('../utils/responseHandler');
-const { createEventSchema } = require('../validations/event.validation');
+const {
+  createEventSchema,
+  updateEventSchema,
+} = require('../validations/event.validation');
 
 async function createEvent(req, res) {
   try {
@@ -42,10 +45,11 @@ async function getEventById(req, res) {
 
 async function updateEvent(req, res) {
   try {
-    const { id } = req.params;
+    const { id } = req.body;
     const updatedData = req.body;
-
-    const event = await EventService.updateEvent(id, updatedData);
+    const { error, value } = updateEventSchema.validate(updatedData);
+    if (error) return ResponseHandler.badRequest(res, error.details[0].message);
+    const event = await EventService.updateEvent(id, value);
     if (!event) return ResponseHandler.notFound(res, 'Event not found');
 
     return ResponseHandler.success(res, event, 'Event updated successfully');

@@ -27,10 +27,6 @@ module.exports = (sequelize, DataTypes) => {
         type: DataTypes.STRING,
         allowNull: true, // URL/path
       },
-      category: {
-        type: DataTypes.STRING,
-        allowNull: false,
-      },
       status: {
         type: DataTypes.ENUM('upcoming', 'completed', 'cancelled'),
         allowNull: false,

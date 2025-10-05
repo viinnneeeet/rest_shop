@@ -3,9 +3,9 @@ const queries = require('../db/queries/gallery.queries');
 
 // ✅ Create
 async function createGallery(data) {
-  const { src, title, category, description, isActive = true } = data;
+  const { image_url, title, category, description, isActive = true } = data;
   const [result] = await sequelize.query(queries.INSERT_GALLERY, {
-    replacements: { src, title, category, description, isActive },
+    replacements: { image_url, title, category, description, isActive },
   });
   return result;
 }
@@ -26,9 +26,9 @@ async function getGalleryById(id) {
 
 // ✅ Update
 async function updateGallery(id, data) {
-  const { title, category, description, isActive } = data;
+  const { title, category, description, isActive, image_url } = data;
   await sequelize.query(queries.UPDATE_GALLERY, {
-    replacements: { id, title, category, description, isActive },
+    replacements: { id, title, category, description, isActive, image_url },
   });
   return await getGalleryById(id);
 }

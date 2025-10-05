@@ -13,7 +13,7 @@ const CREATE_TABLE_GALLERY = `CREATE TABLE gallery (
 
 // Insert new gallery item
 const INSERT_GALLERY = `
-  INSERT INTO gallery (src, title, category, description, isActive, createdAt, updatedAt)
+  INSERT INTO gallery (image_url, title, category, description, isActive, createdAt, updatedAt)
   VALUES (:image_url, :title, :category, :description, :isActive, NOW(), NOW());
 `;
 
@@ -39,7 +39,7 @@ const UPDATE_GALLERY = `
       category = :category,
       description = :description,
       isActive = :isActive,
-      updatedAt = NOW()
+      updatedAt = NOW(),
       image_url = :image_url
   WHERE id = :id;
 `;

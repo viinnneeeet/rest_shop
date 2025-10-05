@@ -9,9 +9,11 @@ async function createEvent(data) {
     type,
     time,
     location,
-    attendees,
     description,
     isActive = true,
+    image_url,
+    participants,
+    status,
   } = data;
   const [result] = await sequelize.query(queries.INSERT_EVENT, {
     replacements: {
@@ -20,9 +22,11 @@ async function createEvent(data) {
       type,
       time,
       location,
-      attendees,
       description,
       isActive,
+      image_url,
+      participants,
+      status,
     },
   });
   return result;
@@ -50,9 +54,11 @@ async function updateEvent(id, data) {
     type,
     time,
     location,
-    attendees,
     description,
     isActive,
+    image_url,
+    participants,
+    status,
   } = data;
   await sequelize.query(queries.UPDATE_EVENT, {
     replacements: {
@@ -62,9 +68,11 @@ async function updateEvent(id, data) {
       type,
       time,
       location,
-      attendees,
       description,
       isActive,
+      image_url,
+      participants,
+      status,
     },
   });
   return await getEventById(id);
