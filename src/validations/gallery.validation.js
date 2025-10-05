@@ -38,10 +38,12 @@ const createGallerySchema = baseGallerySchema.fork(
 );
 
 // Update schema — all optional fields
-const updateGallerySchema = baseGallerySchema.fork(
-  ['image_url', 'title', 'category', 'description', 'isActive'],
-  (field) => field.optional()
-);
+const updateGallerySchema = baseGallerySchema
+  .fork(
+    ['image_url', 'title', 'category', 'description', 'isActive'],
+    (field) => field.optional()
+  )
+  .unknown(true);
 
 module.exports = {
   createGallerySchema,
