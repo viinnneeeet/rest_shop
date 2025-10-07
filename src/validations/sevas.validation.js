@@ -28,10 +28,12 @@ const baseSevaSchema = Joi.object({
     .messages({
       'any.required': 'At least one benefit is required',
       'array.min': 'Provide at least one benefit',
+      'string.max': 'Each benefit cannot exceed 100 characters',
     }),
 
   category: Joi.string().max(50).required().messages({
     'any.required': 'Category is required',
+    'string.max': 'Category cannot exceed 50 characters',
   }),
 
   availability: Joi.string()
@@ -41,6 +43,7 @@ const baseSevaSchema = Joi.object({
   isActive: Joi.boolean().default(true),
 });
 
+// Create schema — all required
 const createSevaSchema = baseSevaSchema.fork(
   [
     'title',
@@ -54,6 +57,8 @@ const createSevaSchema = baseSevaSchema.fork(
   ],
   (field) => field.required()
 );
+
+// Update schema — all optional
 const updateSevaSchema = baseSevaSchema
   .fork(
     [
@@ -68,5 +73,6 @@ const updateSevaSchema = baseSevaSchema
     ],
     (field) => field.optional()
   )
-  .unknown(true);
+  .unknown(false); // no extra fields
+
 module.exports = { createSevaSchema, updateSevaSchema };

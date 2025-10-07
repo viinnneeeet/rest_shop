@@ -20,7 +20,6 @@ async function createSeva(req, res) {
 async function updateSeva(req, res) {
   try {
     const { error, value } = updateSevaSchema.validate(req.body);
-    console.log(error);
     if (error) return ResponseHandler.badRequest(res, error.details[0].message);
 
     const { id, ...data } = value;
@@ -45,8 +44,21 @@ async function deleteSeva(req, res) {
 
 async function getAllSevas(req, res) {
   try {
-    const sevas = await SevaService.getAllSevas();
-    return ResponseHandler.success(res, sevas, 'Sevas fetched successfully');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const { category, search, isActive } = req.query;
+    const filters = { category, isActive };
+    const { sevasList, pagination } = await SevaService.getAllSevas({
+      page,
+      limit,
+      filters,
+      search,
+    });
+    return ResponseHandler.success(
+      res,
+      { sevasList, pagination },
+      'Sevas fetched successfully'
+    );
   } catch (err) {
     return ResponseHandler.error(res, err.message, err);
   }

@@ -24,8 +24,21 @@ async function createEvent(req, res) {
 
 async function getAllEvents(req, res) {
   try {
-    const events = await EventService.getAllEvents();
-    return ResponseHandler.success(res, events, 'Events fetched successfully');
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const { category, search, isActive } = req.query;
+    const filters = { category, isActive };
+    const { eventsList, pagination } = await EventService.getAllEvents({
+      page,
+      limit,
+      filters,
+      search,
+    });
+    return ResponseHandler.success(
+      res,
+      { eventsList, pagination },
+      'Events fetched successfully'
+    );
   } catch (err) {
     return ResponseHandler.error(res, err.message, err);
   }

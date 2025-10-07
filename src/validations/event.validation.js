@@ -6,9 +6,6 @@ const baseEventSchema = Joi.object({
     'number.base': 'ID must be a number',
     'number.positive': 'ID must be a positive number',
   }),
-  date: Joi.date().messages({
-    'date.base': 'Date must be a valid date',
-  }),
 
   title: Joi.string().trim().max(100).messages({
     'string.base': 'Title must be a string',
@@ -22,12 +19,6 @@ const baseEventSchema = Joi.object({
     'string.max': 'Type cannot exceed 50 characters',
   }),
 
-  time: Joi.string().trim().max(50).messages({
-    'string.base': 'Time must be a string',
-    'string.empty': 'Time cannot be empty',
-    'string.max': 'Time cannot exceed 50 characters',
-  }),
-
   location: Joi.string().trim().max(100).messages({
     'string.base': 'Location must be a string',
     'string.empty': 'Location cannot be empty',
@@ -39,19 +30,27 @@ const baseEventSchema = Joi.object({
     'string.max': 'Description cannot exceed 255 characters',
   }),
 
+  date: Joi.date().messages({
+    'date.base': 'Date must be a valid date',
+  }),
+
+  time: Joi.string().trim().max(50).messages({
+    'string.base': 'Time must be a string',
+    'string.empty': 'Time cannot be empty',
+    'string.max': 'Time cannot exceed 50 characters',
+  }),
+
   isActive: Joi.boolean().default(true).messages({
     'boolean.base': 'isActive must be a boolean value',
   }),
 
   image_url: Joi.string().uri().messages({
     'string.uri': 'Image URL must be a valid URI',
+    'string.empty': 'Image URL cannot be empty',
   }),
 
-  participants: Joi.alternatives([
-    Joi.string().trim(),
-    Joi.number().integer().min(0),
-  ]).messages({
-    'string.base': 'Participants must be text or a number',
+  participants: Joi.number().integer().min(0).messages({
+    'number.base': 'Participants must be a number',
     'number.min': 'Participants cannot be negative',
   }),
 
@@ -60,18 +59,20 @@ const baseEventSchema = Joi.object({
     .valid('pending', 'active', 'completed', 'cancelled', 'upcoming')
     .messages({
       'any.only':
-        'Status must be one of: pending, active, completed, cancelled',
+        'Status must be one of: pending, active, completed, cancelled, upcoming',
     }),
 });
 
-// Create schema — all required
+// Create schema — all required except id (auto-increment)
 const createEventSchema = baseEventSchema.fork(
   [
-    'date',
     'title',
     'type',
-    'time',
     'location',
+    'description',
+    'date',
+    'time',
+    'isActive',
     'image_url',
     'participants',
     'status',
@@ -79,8 +80,7 @@ const createEventSchema = baseEventSchema.fork(
   (field) => field.required()
 );
 
-// Update schema — same shape, all optional
-
+// Update schema — all optional
 const updateEventSchema = baseEventSchema.unknown(false);
 
 module.exports = {

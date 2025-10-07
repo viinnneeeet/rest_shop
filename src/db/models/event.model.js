@@ -8,34 +8,53 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100), // max 100 chars
+        allowNull: false,
+      },
+      type: {
+        type: DataTypes.STRING(50), // max 50 chars
+        allowNull: false,
+      },
+      location: {
+        type: DataTypes.STRING(100), // max 100 chars
         allowNull: false,
       },
       description: {
-        type: DataTypes.TEXT,
-        allowNull: false,
+        type: DataTypes.STRING(255), // max 255 chars
+        allowNull: true, // Joi allows null/empty
       },
       date: {
-        type: DataTypes.DATEONLY, // only date
+        type: DataTypes.DATEONLY,
         allowNull: false,
       },
       time: {
-        type: DataTypes.TIME, // HH:MM:SS
+        type: DataTypes.STRING(50), // Joi treats as string
         allowNull: false,
+      },
+      isActive: {
+        type: DataTypes.BOOLEAN,
+        allowNull: false,
+        defaultValue: true,
       },
       image_url: {
         type: DataTypes.STRING,
-        allowNull: true, // URL/path
-      },
-      status: {
-        type: DataTypes.ENUM('upcoming', 'completed', 'cancelled'),
-        allowNull: false,
-        defaultValue: 'upcoming',
+        allowNull: false, // Joi requires it
       },
       participants: {
-        type: DataTypes.INTEGER,
+        type: DataTypes.INTEGER.UNSIGNED, // Sequelize integer >= 0
         allowNull: false,
         defaultValue: 0,
+      },
+      status: {
+        type: DataTypes.ENUM(
+          'pending',
+          'active',
+          'completed',
+          'cancelled',
+          'upcoming'
+        ),
+        allowNull: false,
+        defaultValue: 'upcoming',
       },
     },
     {

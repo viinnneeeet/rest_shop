@@ -8,19 +8,19 @@ module.exports = (sequelize, DataTypes) => {
         autoIncrement: true,
       },
       image_url: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255), // max length to match Joi URI limit
         allowNull: false,
       },
       title: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(100), // max 100 chars to match Joi
         allowNull: false,
       },
       category: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(50), // max 50 chars to match Joi
         allowNull: false,
       },
       description: {
-        type: DataTypes.STRING,
+        type: DataTypes.STRING(255),
         allowNull: true,
       },
       isActive: {

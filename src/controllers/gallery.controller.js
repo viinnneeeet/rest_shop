@@ -26,10 +26,20 @@ async function createGallery(req, res) {
 
 async function getAllGallery(req, res) {
   try {
-    const galleryList = await GalleryService.getAllGallery();
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const { category, search, isActive } = req.query;
+    const { galleryList, pagination } = await GalleryService.getAllGallery({
+      page,
+      limit,
+      category,
+      search,
+      isActive,
+    });
+
     return ResponseHandler.success(
       res,
-      galleryList,
+      { galleryList, pagination },
       'Gallery list fetched successfully'
     );
   } catch (err) {

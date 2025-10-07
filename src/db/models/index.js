@@ -1,0 +1,12 @@
+const { Sequelize } = require('sequelize');
+const sequelize = require('../../config/mysqlDb');
+
+const db = {};
+db.Sequelize = Sequelize;
+db.sequelize = sequelize;
+
+db.Gallery = require('./gallery.model')(sequelize, Sequelize.DataTypes);
+db.Events = require('./event.model')(sequelize, Sequelize);
+db.Sevas = require('./seva.model')(sequelize, Sequelize);
+
+module.exports = db;

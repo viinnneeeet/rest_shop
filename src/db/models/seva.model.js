@@ -44,7 +44,7 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       tableName: 'sevas',
-      timestamps: true, // auto-adds createdAt & updatedAt
+      timestamps: true,
     }
   );
 
