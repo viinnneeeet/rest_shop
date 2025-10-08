@@ -81,7 +81,7 @@ const createEventSchema = baseEventSchema.fork(
 );
 
 // Update schema — all optional
-const updateEventSchema = baseEventSchema.unknown(false);
+const updateEventSchema = baseEventSchema.unknown(true);
 
 module.exports = {
   createEventSchema,

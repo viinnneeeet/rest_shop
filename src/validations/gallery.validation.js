@@ -43,7 +43,7 @@ const updateGallerySchema = baseGallerySchema
     ['image_url', 'title', 'category', 'description', 'isActive'],
     (field) => field.optional()
   )
-  .unknown(false); // no extra fields allowed
+  .unknown(true); // no extra fields allowed
 
 module.exports = {
   createGallerySchema,

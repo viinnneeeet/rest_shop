@@ -73,6 +73,6 @@ const updateSevaSchema = baseSevaSchema
     ],
     (field) => field.optional()
   )
-  .unknown(false); // no extra fields
+  .unknown(true); // no extra fields
 
 module.exports = { createSevaSchema, updateSevaSchema };

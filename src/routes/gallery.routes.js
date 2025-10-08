@@ -1,10 +1,10 @@
 const express = require('express');
 const GalleryController = require('../controllers/gallery.controller');
-
+const authenticate = require('../middlewares/auth.middleware');
 const router = express.Router();
 
 // ✅ Create a new gallery item
-router.post('/create-gallery', GalleryController.createGallery);
+router.post('/create-gallery', authenticate, GalleryController.createGallery);
 
 // ✅ Get all active gallery items
 router.get('/get-gallery', GalleryController.getAllGallery);
@@ -13,9 +13,13 @@ router.get('/get-gallery', GalleryController.getAllGallery);
 router.get('/get-gallery/:id', GalleryController.getGalleryById);
 
 // ✅ Update a gallery item by ID
-router.post('/update-gallery', GalleryController.updateGallery);
+router.post('/update-gallery', authenticate, GalleryController.updateGallery);
 
 // ✅ Soft delete a gallery item (set isActive = false)
-router.delete('/delete-gallery/:id', GalleryController.deleteGallery);
+router.delete(
+  '/delete-gallery/:id',
+  authenticate,
+  GalleryController.deleteGallery
+);
 
 module.exports = router;

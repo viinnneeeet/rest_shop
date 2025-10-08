@@ -29,10 +29,11 @@ async function getAllGallery(req, res) {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
     const { category, search, isActive } = req.query;
+    const filters = { category };
     const { galleryList, pagination } = await GalleryService.getAllGallery({
       page,
       limit,
-      category,
+      filters,
       search,
       isActive,
     });

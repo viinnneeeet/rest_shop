@@ -46,8 +46,8 @@ async function getAllSevas(req, res) {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const { category, search, isActive } = req.query;
-    const filters = { category, isActive };
+    const { category, search, isActive, availability } = req.query;
+    const filters = { category, isActive, availability };
     const { sevasList, pagination } = await SevaService.getAllSevas({
       page,
       limit,
