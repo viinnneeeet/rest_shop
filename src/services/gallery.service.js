@@ -32,7 +32,7 @@ async function getAllGallery({ page = 1, limit = 10, filters = {}, search }) {
     for (const [key, value] of Object.entries(filters)) {
       if (value !== undefined && value !== '') where[key] = value;
     }
-    console.log(filters);
+
     // Apply search (if any)
     if (search) {
       const { Op } = db.Sequelize;

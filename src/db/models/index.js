@@ -9,5 +9,6 @@ db.Gallery = require('./gallery.model')(sequelize, Sequelize.DataTypes);
 db.Events = require('./event.model')(sequelize, Sequelize);
 db.Sevas = require('./seva.model')(sequelize, Sequelize);
 db.SevaPayment = require('./seva-payment.model')(sequelize, Sequelize);
+db.SevaBooking = require('./seva-booking.model')(sequelize, Sequelize);
 
 module.exports = db;
