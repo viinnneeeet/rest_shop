@@ -18,6 +18,7 @@ async function createEvent(req, res) {
       201
     );
   } catch (err) {
+    console.log(err);
     return ResponseHandler.error(res, err.message, err);
   }
 }
@@ -40,6 +41,7 @@ async function getAllEvents(req, res) {
       'Events fetched successfully'
     );
   } catch (err) {
+    console.log(err);
     return ResponseHandler.error(res, err.message, err);
   }
 }
@@ -52,6 +54,7 @@ async function getEventById(req, res) {
 
     return ResponseHandler.success(res, event, 'Event fetched successfully');
   } catch (err) {
+    console.log(err);
     return ResponseHandler.error(res, err.message, err);
   }
 }
@@ -67,6 +70,7 @@ async function updateEvent(req, res) {
 
     return ResponseHandler.success(res, event, 'Event updated successfully');
   } catch (err) {
+    console.log(err);
     return ResponseHandler.error(res, err.message, err);
   }
 }
@@ -81,6 +85,7 @@ async function deleteEvent(req, res) {
     const result = await EventService.deleteEvent(id);
     return ResponseHandler.success(res, result, 'Event deleted (soft delete)');
   } catch (err) {
+    console.log(err);
     return ResponseHandler.error(res, err.message, err);
   }
 }

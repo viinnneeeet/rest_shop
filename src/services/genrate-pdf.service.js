@@ -1,13 +1,26 @@
-const puppeteer = require('puppeteer');
+const chromium = require('@sparticuz/chromium');
+const puppeteer = require('puppeteer-core');
+const os = require('os');
 
 async function generatePDF(htmlContent) {
+  const isWindows = os.platform() === 'win32';
+
+  const executablePath = isWindows
+    ? 'C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe' // Adjust your local Chrome path
+    : await chromium.executablePath();
+
   const browser = await puppeteer.launch({
-    headless: 'new',
-    args: ['--no-sandbox', '--disable-setuid-sandbox'],
+    args: isWindows ? [] : chromium.args,
+    defaultViewport: isWindows ? null : chromium.defaultViewport,
+    executablePath,
+    headless: true,
   });
 
   const page = await browser.newPage();
-  await page.setContent(htmlContent, { waitUntil: 'networkidle0' });
+  await page.setContent(htmlContent, {
+    waitUntil: 'networkidle0',
+    timeout: 60000,
+  });
   await page.evaluateHandle('document.fonts.ready');
   await page.emulateMediaType('screen');
 

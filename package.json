@@ -15,6 +15,7 @@
   "author": "Vineet Poojary",
   "license": "ISC",
   "dependencies": {
+    "@sparticuz/chromium": "^141.0.0",
     "axios": "^0.27.2",
     "bcryptjs": "^3.0.2",
     "body-parser": "^1.20.0",
@@ -32,6 +33,7 @@
     "mysql2": "^3.11.3",
     "nodemailer": "^6.9.1",
     "puppeteer": "^24.24.0",
+    "puppeteer-core": "^24.24.1",
     "sequelize": "^6.37.3",
     "streamifier": "^0.1.1",
     "uuid": "^9.0.0"
