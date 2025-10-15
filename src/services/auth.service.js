@@ -66,4 +66,21 @@ async function updatePassword(email, oldPassword, newPassword) {
   }
 }
 
-module.exports = { login, register, updatePassword };
+async function updateTempPassword(email, newPassword) {
+  try {
+    const user = await User.findByEmail(email);
+    if (user) {
+      user.password = newPassword;
+    }
+    await user.save();
+
+    return {
+      message: 'Password updated successfully',
+    };
+  } catch (err) {
+    console.log(err);
+    throw new Error('Failed to update password');
+  }
+}
+
+module.exports = { login, register, updatePassword, updateTempPassword };

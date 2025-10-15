@@ -72,4 +72,23 @@ async function updatePassword(req, res) {
   }
 }
 
-module.exports = { login, register, updatePassword };
+async function updateTempPassword(req, res) {
+  try {
+    const { error, value } = updateTempPassword.validate(req.body);
+    if (error) return ResponseHandler.badRequest(res, error.details[0].message);
+    const result = await AuthService.updateTempPassword(
+      value.email,
+      value.newPassword
+    );
+    return ResponseHandler.success(
+      res,
+      result,
+      'Password updated successfully'
+    );
+  } catch (err) {
+    console.log(err);
+    return ResponseHandler.error(res, err.message, err);
+  }
+}
+
+module.exports = { login, register, updatePassword, updateTempPassword };

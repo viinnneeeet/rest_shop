@@ -42,4 +42,20 @@ const updatePasswordSchema = Joi.object({
   }),
 });
 
-module.exports = { loginSchema, registerSchema, updatePasswordSchema };
+const udpateTempPasswordSchema = Joi.object({
+  email: Joi.string().trim().email().required().messages({
+    'string.email': 'Please enter a valid email',
+    'any.required': 'Email is required',
+  }),
+  password: Joi.string().min(6).required().messages({
+    'string.min': 'New password must be at least 6 characters',
+    'any.required': 'New password is required',
+  }),
+});
+
+module.exports = {
+  loginSchema,
+  registerSchema,
+  updatePasswordSchema,
+  udpateTempPasswordSchema,
+};

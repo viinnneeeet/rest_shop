@@ -6,6 +6,7 @@ const app = require('./src/app');
 const connectDatabase = require('./src/config/db'); // Mongo
 const sequelize = require('./src/config/mysqlDb'); // MySQL/Sequelize
 const { PORT, NODE_ENV } = require('./src/config/env');
+const { verifySMTP } = require('./src/config/mailer');
 
 // --------------------
 // Handle uncaught exceptions
@@ -36,6 +37,7 @@ cloudinary.config({
     await sequelize.authenticate();
     console.log('✅ MySQL connection established');
 
+    await verifySMTP();
     // Optionally sync models
     // await sequelize.sync({ alter: true });
   } catch (err) {
