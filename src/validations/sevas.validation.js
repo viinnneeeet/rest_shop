@@ -37,7 +37,7 @@ const baseSevaSchema = Joi.object({
   }),
 
   availability: Joi.string()
-    .valid('available', 'unavailable', 'upcoming')
+    .valid('available', 'unavailable', 'upcoming', 'limited')
     .default('available'),
 
   isActive: Joi.boolean().default(true),

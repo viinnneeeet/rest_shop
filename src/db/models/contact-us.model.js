@@ -34,6 +34,14 @@ module.exports = (sequelize, Datatypes) => {
         allowNull: false,
         defaultValue: 'new',
       },
+      replyMessage: {
+        type: Datatypes.TEXT,
+        allowNull: true,
+      },
+      repliedAt: {
+        type: Datatypes.DATE,
+        allowNull: true,
+      },
     },
     {
       tableName: 'contact_us',

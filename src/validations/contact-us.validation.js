@@ -32,6 +32,18 @@ const contactUsSchema = baseContactUsSchema.fork(
   (field) => field.required()
 );
 
+const replySchema = Joi.object({
+  contactId: Joi.number().integer().required().messages({
+    'any.required': 'Contact ID is required',
+    'number.base': 'Contact ID must be a valid number',
+  }),
+  response: Joi.string().min(3).required().messages({
+    'string.empty': 'Reply message cannot be empty',
+    'string.min': 'Reply message must be at least 3 characters long',
+  }),
+});
+
 module.exports = {
   contactUsSchema,
+  replySchema,
 };

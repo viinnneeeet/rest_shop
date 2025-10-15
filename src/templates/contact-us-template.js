@@ -20,7 +20,7 @@ const htmlSections = {
         }
         <div class="message-box">
           <p><strong>Message:</strong></p>
-          <blockquote>${contact.message}</blockquote>
+          <blockquote>${contact.messages}</blockquote>
         </div>
       </div>
     </div>
@@ -128,4 +128,55 @@ function generateContactEmailHTML(contact) {
   `;
 }
 
-module.exports = { htmlSections, generateContactEmailHTML };
+function generateReplyEmailHTML(contact, replyMessage) {
+  return `
+    <!DOCTYPE html>
+    <html lang="en">
+      <head>
+        <meta charset="UTF-8" />
+        <title>Temple Response</title>
+        ${htmlSections.styles}
+      </head>
+      <body>
+        <div class="email-container">
+          ${htmlSections.header}
+
+          <div class="info">
+            <div class="section-title">Dear ${
+              contact.firstName || 'Devotee'
+            },</div>
+            <div class="user-details">
+              <p>Thank you for reaching out to <strong>Shree Raghavendra Swami Temple</strong>.</p>
+              <p>Our team has received your message and we wanted to personally respond to your inquiry:</p>
+
+              <div class="message-box">
+                <p><strong>Our Response:</strong></p>
+                <blockquote>${replyMessage}</blockquote>
+              </div>
+
+              <p>If you have any further questions or need assistance, feel free to reply to this email.</p>
+            </div>
+          </div>
+
+          <div class="info">
+            <div class="section-title">Your Original Message</div>
+            <div class="user-details">
+              <div class="message-box">
+                <p><strong>Your Message:</strong></p>
+                <blockquote>${contact.messages}</blockquote>
+              </div>
+            </div>
+          </div>
+
+          ${htmlSections.footer}
+        </div>
+      </body>
+    </html>
+  `;
+}
+
+module.exports = {
+  htmlSections,
+  generateContactEmailHTML,
+  generateReplyEmailHTML,
+};

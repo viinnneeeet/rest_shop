@@ -27,8 +27,8 @@ async function getAllEvents(req, res) {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = parseInt(req.query.limit) || 10;
-    const { category, search, isActive } = req.query;
-    const filters = { category, isActive };
+    const { type, search, isActive, status } = req.query;
+    const filters = { type, isActive, status };
     const { eventsList, pagination } = await EventService.getAllEvents({
       page,
       limit,

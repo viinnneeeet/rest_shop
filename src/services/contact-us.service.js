@@ -1,6 +1,7 @@
 const db = require('../db/models');
 const {
   generateContactEmailHTML,
+  generateReplyEmailHTML,
 } = require('../templates/contact-us-template');
 const sendMail = require('../utils/sendMail');
 
@@ -20,7 +21,6 @@ async function createContactUs(data) {
         subject: 'Thank You for Contacting Shree Raghavendra Swami Temple',
         html: generateContactEmailHTML(plainContact),
       });
-      console.log(mail);
     } catch (err) {
       console.log(err);
       throw err;
@@ -69,7 +69,54 @@ async function getAllContactUsList({
   }
 }
 
+async function replyContactUs(contactId, replyMessage) {
+  try {
+    // 1️⃣ Fetch contact record
+    const contact = await db.ContactUs.findByPk(contactId);
+
+    if (!contact) {
+      throw new Error(`Contact entry with ID ${contactId} not found.`);
+    }
+
+    const plainContact = contact.get({ plain: true });
+
+    // 2️⃣ Compose and send the reply email
+    try {
+      const mail = await sendMail({
+        to: plainContact.email,
+        subject: `Re: Your message to Shree Raghavendra Swami Temple 🙏`,
+        html: generateReplyEmailHTML(plainContact, replyMessage),
+      });
+
+      console.log(`📨 Reply sent to ${plainContact.email}:`, mail.messageId);
+
+      // 3️⃣ Optionally store the reply in DB
+      await contact.update({
+        replyMessage,
+        repliedAt: new Date(),
+        status: 'Replied',
+      });
+
+      return {
+        success: true,
+        message: 'Reply email sent successfully',
+        data: {
+          contact: contact.get({ plain: true }),
+          mailId: mail.messageId,
+        },
+      };
+    } catch (err) {
+      console.error('❌ Failed to send reply email:', err);
+      throw new Error('Failed to send reply email');
+    }
+  } catch (err) {
+    console.error('💥 Error in replyContactUs:', err);
+    throw err;
+  }
+}
+
 module.exports = {
   createContactUs,
   getAllContactUsList,
+  replyContactUs,
 };
