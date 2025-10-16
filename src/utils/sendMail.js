@@ -1,4 +1,4 @@
-const { transporter } = require('../config/mailer'); // path to your mailer.js
+const { createTransporter } = require('../config/mailer'); // path to your mailer.js
 
 async function sendMail({ to, subject, html, attachments = [] }) {
   try {
@@ -10,6 +10,7 @@ async function sendMail({ to, subject, html, attachments = [] }) {
       attachments,
     };
 
+    const transporter = await createTransporter();
     const info = await transporter.sendMail(mailOptions);
     console.log(`✅ Email sent successfully to ${to}: ${info.messageId}`);
 
