@@ -16,11 +16,11 @@ async function createContactUs(data) {
     });
     const plainContact = contact.get({ plain: true });
     try {
-      const mail = await sendMail({
-        to: plainContact.email,
-        subject: 'Thank You for Contacting Shree Raghavendra Swami Temple',
-        html: generateContactEmailHTML(plainContact),
-      });
+      // const mail = await sendMail({
+      //   to: plainContact.email,
+      //   subject: 'Thank You for Contacting Shree Raghavendra Swami Temple',
+      //   html: generateContactEmailHTML(plainContact),
+      // });
     } catch (err) {
       console.log(err);
       throw err;
@@ -82,13 +82,13 @@ async function replyContactUs(contactId, replyMessage) {
 
     // 2️⃣ Compose and send the reply email
     try {
-      const mail = await sendMail({
-        to: plainContact.email,
-        subject: `Re: Your message to Shree Raghavendra Swami Temple 🙏`,
-        html: generateReplyEmailHTML(plainContact, replyMessage),
-      });
+      // const mail = await sendMail({
+      //   to: plainContact.email,
+      //   subject: `Re: Your message to Shree Raghavendra Swami Temple 🙏`,
+      //   html: generateReplyEmailHTML(plainContact, replyMessage),
+      // });
 
-      console.log(`📨 Reply sent to ${plainContact.email}:`, mail.messageId);
+      // console.log(`📨 Reply sent to ${plainContact.email}:`, mail.messageId);
 
       // 3️⃣ Optionally store the reply in DB
       await contact.update({
@@ -102,7 +102,7 @@ async function replyContactUs(contactId, replyMessage) {
         message: 'Reply email sent successfully',
         data: {
           contact: contact.get({ plain: true }),
-          mailId: mail.messageId,
+          // mailId: mail.messageId,
         },
       };
     } catch (err) {

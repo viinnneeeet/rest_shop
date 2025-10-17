@@ -35,30 +35,30 @@ async function generateInvoicePDF(user, seva) {
       throw new Error('Failed to create valid PDF buffer.');
     }
 
-    // const uploadResult = await uploadInvoicePdf(invoiceId, pdfBuffer);
+    const uploadResult = await uploadInvoicePdf(invoiceId, pdfBuffer);
 
     // 4️⃣ Update booking with invoice URL
-    // await booking.update({ invoiceUrl: uploadResult.secure_url });
+    await booking.update({ invoiceUrl: uploadResult.secure_url });
 
     // 5️⃣ Email the invoice to the user
-    await sendMail({
-      to: user.email,
-      subject: `Your Seva Invoice - ${invoiceId}`,
-      html: htmlContent,
-      attachments: [
-        {
-          filename: `${invoiceId}.pdf`,
-          content: pdfBuffer,
-          contentType: 'application/pdf',
-        },
-      ],
-    });
+    // await sendMail({
+    //   to: user.email,
+    //   subject: `Your Seva Invoice - ${invoiceId}`,
+    //   html: htmlContent,
+    //   attachments: [
+    //     {
+    //       filename: `${invoiceId}.pdf`,
+    //       content: pdfBuffer,
+    //       contentType: 'application/pdf',
+    //     },
+    //   ],
+    // });
 
-    console.log(`📨 Invoice emailed successfully to ${user.email}`);
+    // console.log(`📨 Invoice emailed successfully to ${user.email}`);
 
     return {
       invoiceId,
-      // invoiceUrl: uploadResult.secure_url,
+      invoiceUrl: uploadResult.secure_url,
       booking: booking.get({ plain: true }),
     };
   } catch (err) {
